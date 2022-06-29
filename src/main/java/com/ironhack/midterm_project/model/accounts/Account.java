@@ -1,5 +1,6 @@
 package com.ironhack.midterm_project.model.accounts;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.enums.AccountType;
 import com.ironhack.midterm_project.model.Transaction;
@@ -18,7 +19,7 @@ public abstract class Account {
     private Long id;
 
     @Embedded
-    @AttributeOverrides({ //Para insertar un nuevo campo del mismo tipo
+    @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "balance_amount")),
             @AttributeOverride(name = "currency", column = @Column(name = "balance_currency"))
     })
@@ -33,12 +34,13 @@ public abstract class Account {
     private AccountHolder secondaryOwner;
 
     @Embedded
-    @AttributeOverrides({ //Para insertar un nuevo campo del mismo tipo
+    @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount")),
             @AttributeOverride(name = "currency", column = @Column(name = "penalty_fee_currency"))
     })
-    private final Money penaltyFee = new Money(new BigDecimal(40)); //If balance below minimBalance penaltyFee deducted
-    private int secretKey;
+    private final Money penaltyFee = new Money(new BigDecimal(40));
+    @JsonIgnore
+    private String secretKey;
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
 
@@ -96,11 +98,11 @@ public abstract class Account {
         this.accountType = accountType;
     }
 
-    public int getSecretKey() {
+    public String  getSecretKey() {
         return secretKey;
     }
 
-    public void setSecretKey(int secretKey) {
+    public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
     }
 }

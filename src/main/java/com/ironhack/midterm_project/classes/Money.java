@@ -14,6 +14,11 @@ public class Money {
     private final Currency currency;
     private BigDecimal amount;
 
+    public Money() {
+        this.currency = USD;
+        this.amount=new BigDecimal(0);
+    }
+
     /**
      * Class constructor specifying amount, currency, and rounding
      **/

@@ -1,12 +1,10 @@
 package com.ironhack.midterm_project.model.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.midterm_project.model.accounts.Account;
 import org.apache.tomcat.jni.Address;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
@@ -14,16 +12,35 @@ import java.util.Set;
 @PrimaryKeyJoinColumn(name = "id")
 public class AccountHolder extends User {
     private Date dateOfBirth;
+
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "street", column = @Column(name = "primary_address_street")),
+            @AttributeOverride(name = "homeNumber", column = @Column(name = "primary_address_home_number")),
+            @AttributeOverride(name = "city", column = @Column(name = "primary_address_city")),
+            @AttributeOverride(name = "postalCode", column = @Column(name = "primary_address_postal_code")),
+            @AttributeOverride(name = "country", column = @Column(name = "primary_address_country"))
+    })
     private Address primaryAddress;
-    private String mailingAddress;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "street", column = @Column(name = "mailing_address_street")),
+            @AttributeOverride(name = "homeNumber", column = @Column(name = "mailing_address_home_number")),
+            @AttributeOverride(name = "city", column = @Column(name = "mailing_address_city")),
+            @AttributeOverride(name = "postalCode", column = @Column(name = "mailing_address_postal_code")),
+            @AttributeOverride(name = "country", column = @Column(name = "mailing_address_country"))
+    })
+    private Address mailingAddress;
 
     @OneToMany(mappedBy = "primaryOwner")
+    @JsonIgnore
     private Set<Account> primaryAccountSet;
 
     @OneToMany(mappedBy = "secondaryOwner")
+    @JsonIgnore
     private Set<Account> secondaryAccountSet;
 
+    // GETTERS AND SETTERS
     public Date getDateOfBirth() {
         return dateOfBirth;
     }
@@ -40,11 +57,11 @@ public class AccountHolder extends User {
         this.primaryAddress = primaryAddress;
     }
 
-    public String getMailingAddress() {
+    public Address getMailingAddress() {
         return mailingAddress;
     }
 
-    public void setMailingAddress(String mailingAddress) {
+    public void setMailingAddress(Address mailingAddress) {
         this.mailingAddress = mailingAddress;
     }
 

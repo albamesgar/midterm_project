@@ -1,5 +1,6 @@
 package com.ironhack.midterm_project.model.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.midterm_project.model.accounts.Account;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    @JsonIgnore
     private String password;
     @ManyToOne
     private Role role;

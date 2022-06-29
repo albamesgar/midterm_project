@@ -10,14 +10,7 @@ public class Address {
     private int postalCode;
     private String country;
 
-    public Address(String street, int homeNumber, String city, int postalCode, String country) {
-        this.street = street;
-        this.homeNumber = homeNumber;
-        this.city = city;
-        this.postalCode = postalCode;
-        this.country = country;
-    }
-
+    // GETTERS AND SETTERS
     public String getStreet() {
         return street;
     }

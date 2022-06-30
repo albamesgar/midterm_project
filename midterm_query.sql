@@ -77,13 +77,16 @@ CREATE TABLE IF NOT EXISTS `student_checking` (
 );
 
 CREATE TABLE IF NOT EXISTS `checking` (
+	`creation_date` DATETIME(6),
+	`status` VARCHAR(255),
 	`minimum_balance_amount` DECIMAL(19,2),
 	`minimum_balance_currency` VARCHAR(255),
 	`monthly_maintenance_fee_amount` DECIMAL(19,2),
 	`monthly_maintenance_fee_currency` VARCHAR(255),
+    `last_time_maintenance_fee_applied` DATE,
 	`id` BIGINT NOT NULL,
 	PRIMARY KEY (`id`),
-	FOREIGN KEY (`id`) REFERENCES `student_checking` (`id`)
+	FOREIGN KEY (`id`) REFERENCES `account` (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `credit_card` (
@@ -91,6 +94,7 @@ CREATE TABLE IF NOT EXISTS `credit_card` (
 	`credit_limit_currency` VARCHAR(255),
 	`interest_rate` DECIMAL(19,2),
 	`id` BIGINT NOT NULL,
+    `last_time_interest_applied` DATE,
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id`) REFERENCES `account` (`id`)
 );
@@ -102,6 +106,7 @@ CREATE TABLE IF NOT EXISTS `savings` (
 	`minimum_balance_currency` VARCHAR(255),
 	`status` VARCHAR(255),
 	`id` BIGINT NOT NULL,
+    `last_time_interest_applied` DATE,
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id`) REFERENCES `account` (`id`)
 );
@@ -131,15 +136,37 @@ CREATE TABLE IF NOT EXISTS `transaction` (
 INSERT INTO role (name) VALUES
 ("ADMIN"),
 ("ACCOUNT_HOLDER");
-SELECT * FROM role;
+-- SELECT * FROM role;
 
 INSERT INTO third_party (name,hashed_key) VALUES
 ("Lia","1414");
-SELECT * FROM third_party;
+-- SELECT * FROM third_party;
 
 INSERT INTO user(username, password, role_id) VALUES
 ("Pepa","$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 1),
-("Llll","$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 1);
+("Llll","$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 1),
+("Alba","$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 2);
 
 INSERT INTO admin(id) VALUES
-(1);
+(1),
+(2);
+-- SELECT * FROM admin;
+
+INSERT INTO account_holder (id,`date_of_birth`,
+    `primary_address_street`,
+    `primary_address_home_number`,
+    `primary_address_city`,
+    `primary_address_postal_code`,
+    `primary_address_country`) VALUES
+    (3,"1997-03-29","canelones",25,"badalona",08917,"spain");
+    
+INSERT INTO account (`account_type`,
+	`balance_amount`,
+	`secret_key`,
+	`primary_owner_id`) VALUES 
+    ("CREDIT_CARD", 800.00, "$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 3);
+    
+INSERT INTO `credit_card` (
+	`interest_rate`,
+	`id`) VALUES
+    ( 0.2, 1);

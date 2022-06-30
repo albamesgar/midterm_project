@@ -1,14 +1,19 @@
 package com.ironhack.midterm_project.model.accounts;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.enums.AccountType;
+import com.ironhack.midterm_project.enums.Status;
 import com.ironhack.midterm_project.model.Transaction;
 import com.ironhack.midterm_project.model.users.AccountHolder;
-import com.ironhack.midterm_project.model.users.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -18,6 +23,7 @@ public abstract class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Initial balance can not be null")
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "balance_amount")),
@@ -25,6 +31,7 @@ public abstract class Account {
     })
     private Money balance;
 
+    @NotNull(message = "Primary owner can not be null")
     @ManyToOne
     @JoinColumn(name = "primary_owner_id")
     private AccountHolder primaryOwner;
@@ -33,16 +40,21 @@ public abstract class Account {
     @JoinColumn(name = "secondary_owner_id")
     private AccountHolder secondaryOwner;
 
+    @Null(message = "You can not change the penalty fee")
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount")),
             @AttributeOverride(name = "currency", column = @Column(name = "penalty_fee_currency"))
     })
-    private final Money penaltyFee = new Money(new BigDecimal(40));
-    @JsonIgnore
+    private final Money penaltyFee;
+    @NotNull(message = "Secret key can not be null")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String secretKey;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    protected LocalDate creationDate;
     @Enumerated(EnumType.STRING)
-    private AccountType accountType;
+    private Status status;
 
     @OneToMany(mappedBy = "sendingAccount")
     private Set<Transaction> transactionsDone;
@@ -51,6 +63,29 @@ public abstract class Account {
 
     // CONSTRUCTORS
     public Account() {
+        this.penaltyFee = new Money(new BigDecimal(40));
+        this.balance = new Money(new BigDecimal(0));
+        this.status = Status.ACTIVE;
+    }
+
+    public Account(Money balance, AccountHolder primaryOwner, String secretKey, LocalDate creationDate){
+        this.balance = balance;
+        this.penaltyFee = new Money(new BigDecimal(40));
+        this.primaryOwner = primaryOwner;
+        this.secretKey = secretKey;
+        this.creationDate = creationDate;
+        this.status = Status.ACTIVE;
+    }
+
+    public Account(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
+                   String secretKey, LocalDate creationDate){
+        this.balance = balance;
+        this.penaltyFee = new Money(new BigDecimal(40));
+        this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
+        this.secretKey = secretKey;
+        this.creationDate = creationDate;
+        this.status = Status.ACTIVE;
     }
 
     // GETTERS AND SETTERS
@@ -88,14 +123,6 @@ public abstract class Account {
 
     public void setBalance(Money balance) {
         this.balance = balance;
-    }
-
-    public AccountType getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(AccountType accountType) {
-        this.accountType = accountType;
     }
 
     public String  getSecretKey() {

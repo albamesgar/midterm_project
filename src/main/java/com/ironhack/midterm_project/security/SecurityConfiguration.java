@@ -18,9 +18,12 @@ public class SecurityConfiguration {
         http.httpBasic(); // Vamos a utilitzar basic auth
         http.csrf().disable(); // Desactivamos la protección CSRF porque nosotros no vamos a manejar el HTML
         http.authorizeRequests()
-//                .antMatchers(HttpMethod.GET, "/hello-world", "/hello-user").authenticated()
-//                .antMatchers(HttpMethod.GET,"/hello/**").hasRole("ADMIN")
-//                .antMatchers(HttpMethod.POST, "/hello-post").hasRole("TECHNICIAN")
+                .antMatchers(HttpMethod.GET, "/accounts/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET,"/my-accounts/**").hasRole("ACCOUNT_HOLDER")
+                .antMatchers(HttpMethod.GET, "/my-user").hasAnyRole("ADMIN", "ACCOUNT_HOLDER")
+                .antMatchers(HttpMethod.POST, "/new/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/delete/**").hasRole("ADMIN")
                 .anyRequest().permitAll();
         return http.build();
     }

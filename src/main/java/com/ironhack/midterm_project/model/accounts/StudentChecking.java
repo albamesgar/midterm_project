@@ -1,38 +1,32 @@
 package com.ironhack.midterm_project.model.accounts;
 
+import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.enums.Status;
+import com.ironhack.midterm_project.model.users.AccountHolder;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.PrimaryKeyJoinColumn;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class StudentChecking extends Account{
-    private Date creationDate;
-    @Enumerated(EnumType.STRING)
-    private Status status;
 
     // CONSTRUCTORS
     public StudentChecking() {
     }
 
+    public StudentChecking(Money balance, AccountHolder primaryOwner, String secretKey, LocalDate creationDate) {
+        super(balance, primaryOwner, secretKey, creationDate);
+    }
+
+    public StudentChecking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey,
+                           LocalDate creationDate) {
+        super(balance, primaryOwner, secondaryOwner, secretKey, creationDate);
+    }
+
     // GETTERS AND SETTERS
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 }

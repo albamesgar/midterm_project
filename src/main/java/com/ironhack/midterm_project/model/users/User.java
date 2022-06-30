@@ -1,9 +1,11 @@
 package com.ironhack.midterm_project.model.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.model.accounts.Account;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
@@ -12,12 +14,26 @@ public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull(message = "username can not be null")
     private String username;
-    @JsonIgnore
+    @NotNull(message = "password can not be null")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-    @ManyToOne
+    @NotNull(message = "Role can not be null")
+    @ManyToOne(cascade = CascadeType.ALL)
     private Role role;
 
+    //CONSTRUCTORS
+    public User() {
+    }
+
+    public User(String username, String password, Role role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    //GETTERS AND SETTERS
     public Long getId() {
         return id;
     }

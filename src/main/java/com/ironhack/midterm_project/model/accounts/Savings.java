@@ -93,15 +93,4 @@ public class Savings extends Account{
             balance.decreaseAmount(super.getPenaltyFee());
         }
     }
-
-    @Override
-    public Money getBalance() {
-        if (TimeDifference.yearDifference(lastTimeInterestApplied)){
-            Money balance = super.getBalance();
-            BigDecimal interest = balance.getAmount().multiply(interestRate);
-            balance.increaseAmount(interest);
-            super.setBalance(balance);
-        }
-        return super.getBalance();
-    }
 }

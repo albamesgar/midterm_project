@@ -12,14 +12,17 @@ import com.ironhack.midterm_project.model.users.AccountHolder;
 import com.ironhack.midterm_project.repository.*;
 import com.ironhack.midterm_project.security.CustomUserDetails;
 import com.ironhack.midterm_project.service.interfaces.AccountService;
+import com.ironhack.midterm_project.utils.PasswordEncodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.crypto.SecretKey;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,31 +47,37 @@ public class AccountServiceImpl implements AccountService {
 
     public void applyMonthlyMaintenanceFee(Checking checking){
         LocalDate lastTimeMaintenanceFeeApplied = checking.getLastTimeMaintenanceFeeApplied();
-        if (TimeDifference.monthDifference(lastTimeMaintenanceFeeApplied)){
+        if (TimeDifference.monthDifference(lastTimeMaintenanceFeeApplied)>0){
+            int months = TimeDifference.monthDifference(lastTimeMaintenanceFeeApplied);
             Money balance = checking.getBalance();
             Money fee = checking.getMonthlyMaintenanceFee();
-            balance.decreaseAmount(fee);
+            BigDecimal feeToApply = fee.getAmount().multiply(BigDecimal.valueOf(months));
+            balance.decreaseAmount(feeToApply);
             checking.setBalance(balance);
             checkingRepository.save(checking);
         }
     }
 
     public void applyMonthlyInterest(CreditCard creditCard){
-        if (TimeDifference.monthDifference(creditCard.getLastTimeInterestApplied())){
+        if (TimeDifference.monthDifference(creditCard.getLastTimeInterestApplied())>0){
+            int months = TimeDifference.monthDifference(creditCard.getLastTimeInterestApplied());
             Money balance = creditCard.getBalance();
             BigDecimal interest = balance.getAmount().multiply(creditCard.getInterestRate()).
                     divide(new BigDecimal("12"));
-            balance.increaseAmount(interest);
+            BigDecimal interestToApply = interest.multiply(BigDecimal.valueOf(months));
+            balance.increaseAmount(interestToApply);
             creditCard.setBalance(balance);
             creditCardRepository.save(creditCard);
         }
     }
 
     public void applyAnnualInterest(Savings savings){
-        if (TimeDifference.yearDifference(savings.getLastTimeInterestApplied())){
+        if (TimeDifference.yearDifference(savings.getLastTimeInterestApplied())>0){
+            int years = TimeDifference.yearDifference(savings.getLastTimeInterestApplied());
             Money balance = savings.getBalance();
             BigDecimal interest = balance.getAmount().multiply(savings.getInterestRate());
-            balance.increaseAmount(interest);
+            BigDecimal interestToApply = interest.multiply(BigDecimal.valueOf(years));
+            balance.increaseAmount(interestToApply);
             savings.setBalance(balance);
             savingsRepository.save(savings);
         }
@@ -179,6 +188,7 @@ public class AccountServiceImpl implements AccountService {
 
     public Account checkingLogic(Money balance,String secretKey,Long primaryOwnerId,
                                  Optional<Long> optionalSecondaryOwnerId){
+        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
         AccountHolder primaryOwner = findAccountHolder(primaryOwnerId);
         int primaryOwnerAge = Period.between(primaryOwner.getDateOfBirth().toLocalDate(),LocalDate.now()).getYears();
 
@@ -217,6 +227,7 @@ public class AccountServiceImpl implements AccountService {
 
     public CreditCard creditCardLogic(Money balance,String secretKey,Money creditLimit,BigDecimal interestRate,
                                       Long primaryOwnerId, Optional<Long> optionalSecondaryOwnerId){
+        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
         AccountHolder primaryOwner = findAccountHolder(primaryOwnerId);
 
         CreditCard creditCard = new CreditCard(balance, primaryOwner, secretKey, creditLimit,
@@ -248,6 +259,7 @@ public class AccountServiceImpl implements AccountService {
 
     public Savings savingsLogic(Money balance,String secretKey,Money minimumBalance,BigDecimal interestRate,
                                 Long primaryOwnerId,Optional<Long> optionalSecondaryOwnerId){
+        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
         AccountHolder primaryOwner = findAccountHolder(primaryOwnerId);
 
         Savings savings = new Savings(balance, primaryOwner, secretKey, minimumBalance,

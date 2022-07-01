@@ -12,6 +12,7 @@ import com.ironhack.midterm_project.repository.ThirdPartyRepository;
 import com.ironhack.midterm_project.repository.TransactionRepository;
 import com.ironhack.midterm_project.security.CustomUserDetails;
 import com.ironhack.midterm_project.service.interfaces.TransactionService;
+import com.ironhack.midterm_project.utils.PasswordEncodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -72,6 +73,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public String thirdPartyRefund(String hashedKey, Long receivingAccountId,String secretKey,Money amount){
+        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
+        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
+
         //Check if third-party exists
         ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Third Party not found"));
@@ -97,6 +101,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public String thirdPartyDischarge(String hashedKey,Long sendingAccountId,String secretKey,Money amount){
+        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
+        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
+
         //Check if third-party exists
         ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Third Party not found"));

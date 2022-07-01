@@ -9,6 +9,7 @@ import com.ironhack.midterm_project.repository.AdminRepository;
 import com.ironhack.midterm_project.repository.ThirdPartyRepository;
 import com.ironhack.midterm_project.repository.UserRepository;
 import com.ironhack.midterm_project.service.interfaces.UserService;
+import com.ironhack.midterm_project.utils.PasswordEncodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public Admin createAdmin(Admin admin) {
+        String password = admin.getPassword();
+        password = PasswordEncodeUtil.encodePassword(password);
+        admin.setPassword(password);
         for (Admin admin1 : adminRepository.findAll()){
             if (admin.equals(admin1)){
                 throw new ResponseStatusException(HttpStatus.IM_USED, "Admin already exists");
@@ -53,6 +57,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public AccountHolder createAccountHolder(AccountHolder accountHolder) {
+        String password = accountHolder.getPassword();
+        password = PasswordEncodeUtil.encodePassword(password);
+        accountHolder.setPassword(password);
         for (AccountHolder accountHolder1 : accountHolderRepository.findAll()){
             if (accountHolder.equals(accountHolder1)){
                 throw new ResponseStatusException(HttpStatus.IM_USED, "Account Holder already exists");
@@ -62,6 +69,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public ThirdParty createThirdParty(ThirdParty thirdParty){
+        String hashedKey = thirdParty.getHashedKey();
+        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
+        thirdParty.setHashedKey(hashedKey);
         for (ThirdParty thirdParty1 : thirdPartyRepository.findAll()){
             if (thirdParty.equals(thirdParty1)){
                 throw new ResponseStatusException(HttpStatus.IM_USED, "Third Party already exists");
@@ -71,18 +81,27 @@ public class UserServiceImpl implements UserService {
     }
 
     public void modifyAdmin(Long id, Admin admin) {
+        String password = admin.getPassword();
+        password = PasswordEncodeUtil.encodePassword(password);
+        admin.setPassword(password);
         User user = findUserById(id);
         admin.setId(user.getId());
         adminRepository.save(admin);
     }
 
     public void modifyAccountHolder(Long id,AccountHolder accountHolder) {
+        String password = accountHolder.getPassword();
+        password = PasswordEncodeUtil.encodePassword(password);
+        accountHolder.setPassword(password);
         User user = findUserById(id);
         accountHolder.setId(user.getId());
         accountHolderRepository.save(accountHolder);
     }
 
     public void modifyThirdParty(Long id,ThirdParty thirdParty){
+        String hashedKey = thirdParty.getHashedKey();
+        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
+        thirdParty.setHashedKey(hashedKey);
         ThirdParty thirdParty1 = findThirdPartyById(id);
         thirdParty.setId(thirdParty1.getId());
         thirdPartyRepository.save(thirdParty);

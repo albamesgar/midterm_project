@@ -3,12 +3,6 @@ package com.ironhack.midterm_project.controller.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Money;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -25,11 +19,9 @@ public class CreditCardDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String secretKey;
 
-//    @DecimalMax(value = "100000", message = "The money credit can not be higher than 100000")
-    private Money creditLimit; //default 100, max 100000 when instantiated
+    private Money creditLimit = new Money(new BigDecimal(100)); //default 100, max 100000 when instantiated
 
-//    @DecimalMin(value = "0.1", message = "The interest rate can not be lower than 0.1")
-    private BigDecimal interestRate; //default 0.2, min 0.1 when instantiated
+    private BigDecimal interestRate = new BigDecimal("0.2"); //default 0.2, min 0.1 when instantiated
 
     //CONSTRUCTORS
 
@@ -122,16 +114,16 @@ public class CreditCardDTO {
         this.secretKey = secretKey;
     }
 
-    public Optional<Money> getCreditLimit() {
-        return Optional.ofNullable(creditLimit);
+    public Money getCreditLimit() {
+        return creditLimit;
     }
 
     public void setCreditLimit(Money creditLimit) {
         this.creditLimit = creditLimit;
     }
 
-    public Optional<BigDecimal> getInterestRate() {
-        return Optional.ofNullable(interestRate);
+    public BigDecimal getInterestRate() {
+        return interestRate;
     }
 
     public void setInterestRate(BigDecimal interestRate) {

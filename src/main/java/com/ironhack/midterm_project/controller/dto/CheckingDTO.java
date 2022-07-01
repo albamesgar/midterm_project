@@ -19,7 +19,6 @@ public class CheckingDTO {
     private String secretKey;
 
     //CONSTRUCTORS
-
     public CheckingDTO() {
     }
 

@@ -3,16 +3,9 @@ package com.ironhack.midterm_project.controller.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Money;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.OptionalLong;
 
 public class SavingsDTO {
     private Money balance;
@@ -26,14 +19,11 @@ public class SavingsDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String secretKey;
 
-//    @DecimalMin(value = "100", message = "The minimum balance can not be lower than 100")
-    private Money minimumBalance; //default 1000, min 100 when instantiated
+    private Money minimumBalance = new Money(new BigDecimal(1000)); //default 1000, min 100 when instantiated
 
-//    @DecimalMax(value = "0.5", message = "The interest rate can not be lower than 0.5")
-    private BigDecimal interestRate; //Default 0.0025, max 0.5
+    private BigDecimal interestRate = new BigDecimal("0.0025"); //Default 0.0025, max 0.5
 
     //CONSTRUCTORS
-
     public SavingsDTO() {
     }
 
@@ -130,16 +120,16 @@ public class SavingsDTO {
         this.secretKey = secretKey;
     }
 
-    public Optional<Money> getMinimumBalance() {
-        return Optional.ofNullable(minimumBalance);
+    public Money getMinimumBalance() {
+        return minimumBalance;
     }
 
     public void setMinimumBalance(Money minimumBalance) {
         this.minimumBalance = minimumBalance;
     }
 
-    public Optional<BigDecimal> getInterestRate() {
-        return Optional.ofNullable(interestRate);
+    public BigDecimal getInterestRate() {
+        return interestRate;
     }
 
     public void setInterestRate(BigDecimal interestRate) {

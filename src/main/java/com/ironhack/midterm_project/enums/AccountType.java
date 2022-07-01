@@ -1,5 +1,5 @@
 package com.ironhack.midterm_project.enums;
 
 public enum AccountType {
-    STUDENTCHECKING, CHECKING, SAVINGS, CREDIT_CARD;
+    STUDENT_CHECKING, CHECKING, SAVINGS, CREDIT_CARD;
 }

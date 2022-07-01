@@ -3,6 +3,7 @@ package com.ironhack.midterm_project.model.accounts;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.classes.TimeDifference;
+import com.ironhack.midterm_project.enums.AccountType;
 import com.ironhack.midterm_project.enums.Status;
 import com.ironhack.midterm_project.model.users.AccountHolder;
 
@@ -24,7 +25,7 @@ public class Savings extends Account{
     })
     private Money minimumBalance; //default 1000, min 100 when instantiated
 
-//    @DecimalMax(value = "0.5", message = "The interest rate can not be lower than 0.5")
+    @DecimalMax(value = "0.5", message = "The interest rate can not be lower than 0.5")
     private BigDecimal interestRate; //Default 0.0025, max 0.5
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate lastTimeInterestApplied;
@@ -36,22 +37,7 @@ public class Savings extends Account{
         this.minimumBalance = new Money(new BigDecimal(1000));
         this.interestRate = new BigDecimal("0.0025");
         this.lastTimeInterestApplied = this.creationDate;
-    }
-
-    public Savings(Money balance, AccountHolder primaryOwner, String secretKey,
-                   LocalDate creationDate) {
-        super(balance, primaryOwner, secretKey, creationDate);
-        this.minimumBalance = new Money(new BigDecimal(1000));
-        this.interestRate = new BigDecimal("0.0025");
-        this.lastTimeInterestApplied = this.creationDate;
-    }
-
-    public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey,
-                   LocalDate creationDate) {
-        super(balance, primaryOwner, secondaryOwner, secretKey, creationDate);
-        this.minimumBalance = new Money(new BigDecimal(1000));
-        this.interestRate = new BigDecimal("0.0025");
-        this.lastTimeInterestApplied = this.creationDate;
+        this.accountType = AccountType.SAVINGS;
     }
 
     public Savings(Money balance, AccountHolder primaryOwner, String secretKey, Money minimumBalance,
@@ -60,22 +46,7 @@ public class Savings extends Account{
         this.minimumBalance = minimumBalance;
         this.interestRate = interestRate;
         this.lastTimeInterestApplied = this.creationDate;
-    }
-
-    public Savings(Money balance, AccountHolder primaryOwner, String secretKey, BigDecimal interestRate,
-                   LocalDate creationDate) {
-        super(balance, primaryOwner, secretKey, creationDate);
-        this.minimumBalance = new Money(new BigDecimal(1000));
-        this.interestRate = interestRate;
-        this.lastTimeInterestApplied = this.creationDate;
-    }
-
-    public Savings(Money balance, AccountHolder primaryOwner, String secretKey, Money minimumBalance,
-                   LocalDate creationDate) {
-        super(balance, primaryOwner, secretKey, creationDate);
-        this.minimumBalance = minimumBalance;
-        this.interestRate = new BigDecimal("0.0025");
-        this.lastTimeInterestApplied = this.creationDate;
+        this.accountType = AccountType.SAVINGS;
     }
 
     public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
@@ -84,22 +55,7 @@ public class Savings extends Account{
         this.minimumBalance = minimumBalance;
         this.interestRate = interestRate;
         this.lastTimeInterestApplied = this.creationDate;
-    }
-
-    public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
-                   String secretKey, BigDecimal interestRate, LocalDate creationDate) {
-        super(balance, primaryOwner, secondaryOwner, secretKey, creationDate);
-        this.minimumBalance = new Money(new BigDecimal(1000));
-        this.interestRate = interestRate;
-        this.lastTimeInterestApplied = this.creationDate;
-    }
-
-    public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
-                   String secretKey, Money minimumBalance, LocalDate creationDate) {
-        super(balance, primaryOwner, secondaryOwner, secretKey, creationDate);
-        this.minimumBalance = minimumBalance;
-        this.interestRate = new BigDecimal("0.0025");
-        this.lastTimeInterestApplied = this.creationDate;
+        this.accountType = AccountType.SAVINGS;
     }
 
     // GETTERS AND SETTERS

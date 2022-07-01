@@ -193,30 +193,30 @@ public class AccountControllerImpl implements AccountController {
                                        @RequestBody @Valid CheckingDTO checkingDTO){
         Money balance = checkingDTO.getBalance();
         String secretKey = checkingDTO.getSecretKey();
-        AccountHolder primaryOwner = accountHolderRepository.findById(checkingDTO.getPrimaryOwnerId())
+        Long primaryOwnerId = checkingDTO.getPrimaryOwnerId();
+        Optional<Long> optionalSecondaryOwnerId = checkingDTO.getSecondaryOwnerId();
+
+        AccountHolder primaryOwner = accountHolderRepository.findById(primaryOwnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
         int primaryOwnerAge = Period.between(primaryOwner.getDateOfBirth().toLocalDate(),LocalDate.now()).getYears();
 
         if(primaryOwnerAge>=24) {
-            Checking checking = new Checking();
-            System.out.println("\n\n\nHa pasado por aquí\n\n\n");
-            if (checkingDTO.getSecondaryOwnerId().isPresent()) {
-                AccountHolder secondaryOwner = accountHolderRepository.findById(checkingDTO.getSecondaryOwnerId().get())
+            Checking checking = new Checking(balance, primaryOwner, secretKey, LocalDate.now());
+
+            if (optionalSecondaryOwnerId.isPresent()) {
+                AccountHolder secondaryOwner = accountHolderRepository.findById(optionalSecondaryOwnerId.get())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
                 checking = new Checking(balance, primaryOwner, secondaryOwner, secretKey, LocalDate.now());
-            } else {
-                checking = new Checking(balance, primaryOwner, secretKey, LocalDate.now());
             }
             return checkingRepository.save(checking);
         }
 
-        StudentChecking studentChecking = new StudentChecking();
-        if (checkingDTO.getSecondaryOwnerId().isPresent()) {
-            AccountHolder secondaryOwner = accountHolderRepository.findById(checkingDTO.getSecondaryOwnerId().get())
+        StudentChecking studentChecking = new StudentChecking(balance, primaryOwner, secretKey, LocalDate.now());
+
+        if (optionalSecondaryOwnerId.isPresent()) {
+            AccountHolder secondaryOwner = accountHolderRepository.findById(optionalSecondaryOwnerId.get())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
             studentChecking = new StudentChecking(balance, primaryOwner, secondaryOwner, secretKey, LocalDate.now());
-        } else {
-            studentChecking = new StudentChecking(balance, primaryOwner, secretKey, LocalDate.now());
         }
         return studentCheckingRepository.save(studentChecking);
     }
@@ -226,50 +226,24 @@ public class AccountControllerImpl implements AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public CreditCard createCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails,
                                        @RequestBody @Valid CreditCardDTO creditCardDTO){
-        CreditCard creditCard = new CreditCard();
         Money balance = creditCardDTO.getBalance();
         String secretKey = creditCardDTO.getSecretKey();
-        AccountHolder primaryOwner = accountHolderRepository.findById(creditCardDTO.getPrimaryOwnerId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-        Optional<Money> creditLimit = creditCardDTO.getCreditLimit();
-        Optional<BigDecimal> interestRate = creditCardDTO.getInterestRate();
+        Money creditLimit = creditCardDTO.getCreditLimit();
+        BigDecimal interestRate = creditCardDTO.getInterestRate();
+        Long primaryOwnerId = creditCardDTO.getPrimaryOwnerId();
+        Optional<Long> optionalSecondaryOwnerId = creditCardDTO.getSecondaryOwnerId();
 
-        if (creditCardDTO.getSecondaryOwnerId().isPresent()){
-            AccountHolder secondaryOwner = accountHolderRepository.findById(creditCardDTO.getSecondaryOwnerId().get())
+        AccountHolder primaryOwner = accountHolderRepository.findById(primaryOwnerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
+
+        CreditCard creditCard = new CreditCard(balance, primaryOwner, secretKey, creditLimit,
+                    interestRate, LocalDate.now());
+
+        if (optionalSecondaryOwnerId.isPresent()){
+            AccountHolder secondaryOwner = accountHolderRepository.findById(optionalSecondaryOwnerId.get())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-            try {
-                creditCard = new CreditCard(balance, primaryOwner, secondaryOwner,secretKey,creditLimit.get(),
-                        interestRate.get(),LocalDate.now());
-            } catch (Exception e1){
-                try {
-                    creditCard = new CreditCard(balance, primaryOwner, secondaryOwner,secretKey,creditLimit.get(),
-                            LocalDate.now());
-                } catch (Exception e2){
-                    try {
-                        creditCard = new CreditCard(balance, primaryOwner, secondaryOwner,secretKey,
-                                interestRate.get(),LocalDate.now());
-                    }catch (Exception e3){
-                        creditCard = new CreditCard(balance, primaryOwner, secondaryOwner,secretKey, LocalDate.now());
-                    }
-                }
-            }
-        } else {
-            try {
-                creditCard = new CreditCard(balance, primaryOwner, secretKey, creditLimit.get(),
-                        interestRate.get(), LocalDate.now());
-            } catch (Exception e1) {
-                try {
-                    creditCard = new CreditCard(balance, primaryOwner, secretKey, creditLimit.get(),
-                            LocalDate.now());
-                } catch (Exception e2) {
-                    try {
-                        creditCard = new CreditCard(balance, primaryOwner, secretKey,
-                                interestRate.get(), LocalDate.now());
-                    } catch (Exception e3) {
-                        creditCard = new CreditCard(balance, primaryOwner, secretKey, LocalDate.now());
-                    }
-                }
-            }
+            creditCard = new CreditCard(balance, primaryOwner, secondaryOwner,secretKey,creditLimit,
+                        interestRate,LocalDate.now());
         }
         return creditCardRepository.save(creditCard);
     }
@@ -279,50 +253,24 @@ public class AccountControllerImpl implements AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public Savings createSavingsAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
                                        @RequestBody @Valid SavingsDTO savingsDTO){
-        Savings savings = new Savings();
         Money balance = savingsDTO.getBalance();
         String secretKey = savingsDTO.getSecretKey();
-        AccountHolder primaryOwner = accountHolderRepository.findById(savingsDTO.getPrimaryOwnerId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-        Optional<Money> minimumBalance = savingsDTO.getMinimumBalance();
-        Optional<BigDecimal> interestRate = savingsDTO.getInterestRate();
+        Money minimumBalance = savingsDTO.getMinimumBalance();
+        BigDecimal interestRate = savingsDTO.getInterestRate();
+        Long primaryOwnerId = savingsDTO.getPrimaryOwnerId();
+        Optional<Long> optionalSecondaryOwnerId = savingsDTO.getSecondaryOwnerId();
 
-        if (savingsDTO.getSecondaryOwnerId().isPresent()){
-            AccountHolder secondaryOwner = accountHolderRepository.findById(savingsDTO.getSecondaryOwnerId().get())
+        AccountHolder primaryOwner = accountHolderRepository.findById(primaryOwnerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
+
+        Savings savings = new Savings(balance, primaryOwner, secretKey, minimumBalance,
+                    interestRate, LocalDate.now());
+
+        if (optionalSecondaryOwnerId.isPresent()){
+            AccountHolder secondaryOwner = accountHolderRepository.findById(optionalSecondaryOwnerId.get())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-            try {
-                 savings = new Savings(balance, primaryOwner, secondaryOwner,secretKey,minimumBalance.get(),
-                        interestRate.get(),LocalDate.now());
-            } catch (Exception e1){
-                try {
-                    savings = new Savings(balance, primaryOwner, secondaryOwner,secretKey,minimumBalance.get(),
-                            LocalDate.now());
-                } catch (Exception e2){
-                    try {
-                        savings = new Savings(balance, primaryOwner, secondaryOwner,secretKey,
-                                interestRate.get(),LocalDate.now());
-                    }catch (Exception e3){
-                        savings = new Savings(balance, primaryOwner, secondaryOwner,secretKey, LocalDate.now());
-                    }
-                }
-            }
-        } else {
-            try {
-                savings = new Savings(balance, primaryOwner, secretKey, minimumBalance.get(),
-                        interestRate.get(), LocalDate.now());
-            } catch (Exception e1) {
-                try {
-                    savings = new Savings(balance, primaryOwner, secretKey, minimumBalance.get(),
-                            LocalDate.now());
-                } catch (Exception e2) {
-                    try {
-                        savings = new Savings(balance, primaryOwner, secretKey,
-                                interestRate.get(), LocalDate.now());
-                    } catch (Exception e3) {
-                        savings = new Savings(balance, primaryOwner, secretKey, LocalDate.now());
-                    }
-                }
-            }
+             savings = new Savings(balance, primaryOwner, secondaryOwner,secretKey,minimumBalance,
+                        interestRate,LocalDate.now());
         }
         return savingsRepository.save(savings);
     }

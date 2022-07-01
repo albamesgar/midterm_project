@@ -73,6 +73,7 @@ CREATE TABLE account(
     secret_key VARCHAR(255),
     creation_date DATE,
     status VARCHAR(7),
+    account_type VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY (primary_owner_id) REFERENCES account_holder(id),
     FOREIGN KEY (secondary_owner_id) REFERENCES account_holder(id)
@@ -160,8 +161,8 @@ INSERT INTO account_holder (id,`date_of_birth`,
 INSERT INTO account (
 	`balance_amount`,
 	`secret_key`,
-	`primary_owner_id`,creation_date) VALUES 
-    (800.00, "$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 3, "2020-06-30");
+	`primary_owner_id`, `creation_date`) VALUES 
+    (800.00, "$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 3, "2022-06-30");
     
 INSERT INTO `credit_card` (
 	`interest_rate`,

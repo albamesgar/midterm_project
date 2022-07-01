@@ -1,7 +1,6 @@
 package com.ironhack.midterm_project.model.accounts;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.enums.AccountType;
@@ -11,9 +10,9 @@ import com.ironhack.midterm_project.model.users.AccountHolder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -40,7 +39,6 @@ public abstract class Account {
     @JoinColumn(name = "secondary_owner_id")
     private AccountHolder secondaryOwner;
 
-//    @Null(message = "You can not change the penalty fee")
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount")),
@@ -56,6 +54,9 @@ public abstract class Account {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
+    protected AccountType accountType;
+
     @OneToMany(mappedBy = "sendingAccount")
     private Set<Transaction> transactionsDone;
     @OneToMany(mappedBy = "receivingAccount")
@@ -66,6 +67,9 @@ public abstract class Account {
         this.penaltyFee = new Money(new BigDecimal(40));
         this.balance = new Money(new BigDecimal(0));
         this.status = Status.ACTIVE;
+        this.accountType = null;
+        this.transactionsDone = new HashSet<>();
+        this.transactionsReceived = new HashSet<>();
     }
 
     public Account(Money balance, AccountHolder primaryOwner, String secretKey, LocalDate creationDate){
@@ -75,6 +79,9 @@ public abstract class Account {
         this.secretKey = secretKey;
         this.creationDate = creationDate;
         this.status = Status.ACTIVE;
+        this.accountType = null;
+        this.transactionsDone = new HashSet<>();
+        this.transactionsReceived = new HashSet<>();
     }
 
     public Account(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
@@ -86,6 +93,9 @@ public abstract class Account {
         this.secretKey = secretKey;
         this.creationDate = creationDate;
         this.status = Status.ACTIVE;
+        this.accountType = null;
+        this.transactionsDone = new HashSet<>();
+        this.transactionsReceived = new HashSet<>();
     }
 
     // GETTERS AND SETTERS

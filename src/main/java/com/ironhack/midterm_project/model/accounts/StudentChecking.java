@@ -1,6 +1,7 @@
 package com.ironhack.midterm_project.model.accounts;
 
 import com.ironhack.midterm_project.classes.Money;
+import com.ironhack.midterm_project.enums.AccountType;
 import com.ironhack.midterm_project.enums.Status;
 import com.ironhack.midterm_project.model.users.AccountHolder;
 
@@ -17,15 +18,18 @@ public class StudentChecking extends Account{
 
     // CONSTRUCTORS
     public StudentChecking() {
+        this.accountType = AccountType.STUDENT_CHECKING;
     }
 
     public StudentChecking(Money balance, AccountHolder primaryOwner, String secretKey, LocalDate creationDate) {
         super(balance, primaryOwner, secretKey, creationDate);
+        this.accountType = AccountType.STUDENT_CHECKING;
     }
 
     public StudentChecking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey,
                            LocalDate creationDate) {
         super(balance, primaryOwner, secondaryOwner, secretKey, creationDate);
+        this.accountType = AccountType.STUDENT_CHECKING;
     }
 
     // GETTERS AND SETTERS

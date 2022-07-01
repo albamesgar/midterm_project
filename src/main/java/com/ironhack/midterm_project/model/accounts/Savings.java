@@ -79,19 +79,21 @@ public class Savings extends Account{
     @Override
     public void setBalance(Money balance) {
         super.setBalance(balance);
-        if (super.getBalance().getAmount().compareTo(minimumBalance.getAmount()) < 0){
+        Money actualBalance = new Money(getBalance().getAmount(),getBalance().getCurrency());
+        actualBalance.decreaseAmount(minimumBalance);
+        if (actualBalance.getAmount().compareTo(BigDecimal.ZERO) < 0){
             balance.decreaseAmount(super.getPenaltyFee());
         }
     }
 
     @Override
     public Money getBalance() {
-//        if (TimeDifference.yearDifference(lastTimeInterestApplied)){
-//            Money balance = super.getBalance();
-//            BigDecimal interest = balance.getAmount().multiply(interestRate);
-//            balance.increaseAmount(interest);
-//            super.setBalance(balance);
-//        }
+        if (TimeDifference.yearDifference(lastTimeInterestApplied)){
+            Money balance = super.getBalance();
+            BigDecimal interest = balance.getAmount().multiply(interestRate);
+            balance.increaseAmount(interest);
+            super.setBalance(balance);
+        }
         return super.getBalance();
     }
 }

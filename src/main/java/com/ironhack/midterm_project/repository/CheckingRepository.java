@@ -12,10 +12,11 @@ import java.util.Optional;
 
 @Repository
 public interface CheckingRepository extends JpaRepository<Checking,Long> {
-    @Query("SELECT a FROM Checking a JOIN AccountHolder ah ON a.primaryOwner = ah.id WHERE ah.id = :id")
+    @Query("SELECT a FROM Checking a JOIN AccountHolder ah ON a.primaryOwner = ah.id OR " +
+            "a.secondaryOwner = ah.id WHERE ah.id = :id")
     List<Checking> findMyCheckingAccounts(@Param("id") Long id);
 
-    @Query("SELECT a FROM Checking a JOIN AccountHolder ah ON a.primaryOwner = ah.id WHERE ah.id = :userId AND " +
-            "a.id = :accountId")
+    @Query("SELECT a FROM Checking a JOIN AccountHolder ah ON a.primaryOwner = ah.id OR a.secondaryOwner = ah.id " +
+            "WHERE ah.id = :userId AND a.id = :accountId")
     Optional<Checking> findMyCheckingAccountById(@Param("userId") Long userId, @Param("accountId") Long accountId);
 }

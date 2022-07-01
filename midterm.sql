@@ -118,17 +118,17 @@ CREATE TABLE credit_card(
 
 CREATE TABLE transaction(
 	id BIGINT NOT NULL AUTO_INCREMENT,
-    date_time DATETIME,
     transaction_type VARCHAR(255),
+    transaction_date DATETIME,
     amount DECIMAL(19,2),
     currency VARCHAR(255),
     sending_account_id BIGINT,
     receiving_account_id BIGINT,
-    sending_third_party_id BIGINT,
+    third_party_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (sending_account_id) REFERENCES account(id),
     FOREIGN KEY (receiving_account_id) REFERENCES account(id),
-    FOREIGN KEY (sending_third_party_id) REFERENCES account(id)
+    FOREIGN KEY (third_party_id) REFERENCES account(id)
 );
 
 INSERT INTO role (name) VALUES
@@ -158,7 +158,7 @@ INSERT INTO account_holder (id,`date_of_birth`,
     `primary_address_country`) VALUES
     (3,"1997-03-29","canelones",25,"badalona",8917,"spain");
     
-INSERT INTO account (
+/*INSERT INTO account (
 	`balance_amount`,
 	`secret_key`,
 	`primary_owner_id`, `creation_date`) VALUES 
@@ -167,4 +167,4 @@ INSERT INTO account (
 INSERT INTO `credit_card` (
 	`interest_rate`,
 	`id`) VALUES
-    ( 0.2, 1);
+    ( 0.2, 1);*/

@@ -120,7 +120,7 @@ public class UserControllerImpl implements UserController {
         return thirdPartyRepository.save(thirdParty);
     }
 
-    // Delete ubser by id (admin)
+    // Delete user by id (admin)
     @DeleteMapping("/delete/user/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,

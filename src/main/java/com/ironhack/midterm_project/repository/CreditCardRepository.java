@@ -12,10 +12,11 @@ import java.util.Optional;
 
 @Repository
 public interface CreditCardRepository extends JpaRepository<CreditCard,Long> {
-    @Query("SELECT a FROM CreditCard a JOIN AccountHolder ah ON a.primaryOwner = ah.id WHERE ah.id = :id")
+    @Query("SELECT a FROM CreditCard a JOIN AccountHolder ah ON a.primaryOwner = ah.id " +
+            "OR a.secondaryOwner = ah.id WHERE ah.id = :id")
     List<CreditCard> findMyCreditCardAccounts(@Param("id") Long id);
 
-    @Query("SELECT a FROM CreditCard a JOIN AccountHolder ah ON a.primaryOwner = ah.id WHERE ah.id = :userId AND " +
-            "a.id = :accountId")
+    @Query("SELECT a FROM CreditCard a JOIN AccountHolder ah ON a.primaryOwner = ah.id OR a.secondaryOwner = ah.id " +
+            "WHERE ah.id = :userId AND a.id = :accountId")
     Optional<CreditCard> findMyCreditCardAccountById(@Param("userId") Long userId, @Param("accountId") Long accountId);
 }

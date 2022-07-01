@@ -13,10 +13,12 @@ import java.util.Optional;
 
 @Repository
 public interface StudentCheckingRepository extends JpaRepository<StudentChecking,Long> {
-    @Query("SELECT a FROM StudentChecking a JOIN AccountHolder ah ON a.primaryOwner = ah.id WHERE ah.id = :id")
+    @Query("SELECT a FROM StudentChecking a JOIN AccountHolder ah ON a.primaryOwner = ah.id " +
+            "OR a.secondaryOwner = ah.id WHERE ah.id = :id")
     List<StudentChecking> findMyStudentCheckingAccounts(@Param("id") Long id);
 
-    @Query("SELECT a FROM StudentChecking a JOIN AccountHolder ah ON a.primaryOwner = ah.id WHERE ah.id = :userId " +
-            "AND a.id = :accountId")
-    Optional<StudentChecking> findMyStudentCheckingAccountById(@Param("userId") Long userId, @Param("accountId") Long accountId);
+    @Query("SELECT a FROM StudentChecking a JOIN AccountHolder ah ON a.primaryOwner = ah.id " +
+            "OR a.secondaryOwner = ah.id WHERE ah.id = :userId AND a.id = :accountId")
+    Optional<StudentChecking> findMyStudentCheckingAccountById(@Param("userId") Long userId,
+                                                               @Param("accountId") Long accountId);
 }

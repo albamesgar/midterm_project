@@ -179,7 +179,7 @@ public class AccountControllerImpl implements AccountController {
     @ResponseStatus(HttpStatus.OK)
     public Account findMyAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
                                @PathVariable Long id) { //Va en service
-        Account account = accountRepository.findMyAccountById(id,userDetails.getUser().getId()).orElseThrow(() ->
+        Account account = accountRepository.findMyAccountById(userDetails.getUser().getId(),id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
         account.getBalance();
         accountRepository.save(account);

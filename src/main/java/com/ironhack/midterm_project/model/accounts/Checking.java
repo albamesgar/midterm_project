@@ -67,7 +67,9 @@ public class Checking extends Account{
     @Override
     public void setBalance(Money balance) {
         super.setBalance(balance);
-        if (super.getBalance().getAmount().compareTo(minimumBalance.getAmount()) < 0){
+        Money actualBalance = new Money(getBalance().getAmount(),getBalance().getCurrency());
+        actualBalance.decreaseAmount(minimumBalance);
+        if (actualBalance.getAmount().compareTo(BigDecimal.ZERO) < 0){
             balance.decreaseAmount(super.getPenaltyFee());
         }
     }

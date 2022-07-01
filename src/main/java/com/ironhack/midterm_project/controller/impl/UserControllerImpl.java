@@ -72,6 +72,15 @@ public class UserControllerImpl implements UserController {
         return user;
     }
 
+    //Show third party by id (admin)
+    @GetMapping("/users/third-parties/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ThirdParty findThirdPartyById(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable Long id) {
+        ThirdParty thirdParty = thirdPartyRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Third Party not found"));
+        return thirdParty;
+    }
+
     //Show my user data (account-holder and admin)
     @GetMapping("/my-user")
     @ResponseStatus(HttpStatus.OK)

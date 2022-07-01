@@ -40,7 +40,7 @@ public abstract class Account {
     @JoinColumn(name = "secondary_owner_id")
     private AccountHolder secondaryOwner;
 
-    @Null(message = "You can not change the penalty fee")
+//    @Null(message = "You can not change the penalty fee")
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount")),

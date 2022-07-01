@@ -26,13 +26,17 @@ public class SavingsDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String secretKey;
 
-    @DecimalMin(value = "100", message = "The minimum balance can not be lower than 100")
+//    @DecimalMin(value = "100", message = "The minimum balance can not be lower than 100")
     private Money minimumBalance; //default 1000, min 100 when instantiated
 
-    @DecimalMax(value = "0.5", message = "The interest rate can not be lower than 0.5")
+//    @DecimalMax(value = "0.5", message = "The interest rate can not be lower than 0.5")
     private BigDecimal interestRate; //Default 0.0025, max 0.5
 
     //CONSTRUCTORS
+
+    public SavingsDTO() {
+    }
+
     public SavingsDTO(Money balance, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, Money minimumBalance, BigDecimal interestRate) {
         this.balance = balance;
         this.primaryOwnerId = primaryOwnerId;
@@ -58,6 +62,21 @@ public class SavingsDTO {
         this.interestRate = interestRate;
     }
 
+    public SavingsDTO(Money balance, Long primaryOwnerId, Long secondaryOwnerId, String secretKey) {
+        this.balance = balance;
+        this.primaryOwnerId = primaryOwnerId;
+        this.secondaryOwnerId = secondaryOwnerId;
+        this.secretKey = secretKey;
+    }
+
+    public SavingsDTO(Money balance, Long primaryOwnerId, String secretKey, Money minimumBalance, BigDecimal interestRate) {
+        this.balance = balance;
+        this.primaryOwnerId = primaryOwnerId;
+        this.secretKey = secretKey;
+        this.minimumBalance = minimumBalance;
+        this.interestRate = interestRate;
+    }
+
     public SavingsDTO(Money balance, Long primaryOwnerId, String secretKey, Money minimumBalance) {
         this.balance = balance;
         this.primaryOwnerId = primaryOwnerId;
@@ -70,6 +89,12 @@ public class SavingsDTO {
         this.primaryOwnerId = primaryOwnerId;
         this.secretKey = secretKey;
         this.interestRate = interestRate;
+    }
+
+    public SavingsDTO(Money balance, Long primaryOwnerId, String secretKey) {
+        this.balance = balance;
+        this.primaryOwnerId = primaryOwnerId;
+        this.secretKey = secretKey;
     }
 
     //GETTERS AND SETTERS

@@ -119,4 +119,14 @@ public class UserControllerImpl implements UserController {
         }
         return thirdPartyRepository.save(thirdParty);
     }
+
+    // Delete ubser by id (admin)
+    @DeleteMapping("/delete/user/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                              @PathVariable Long id) { //Va en service
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));;
+        userRepository.delete(user);
+    }
 }

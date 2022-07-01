@@ -55,7 +55,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     // Show all checking accounts
-    @GetMapping("/accounts/checking")
+    @GetMapping("/accounts/checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<Checking> findAllChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<Checking> checkingList = checkingRepository.findAll();
@@ -67,7 +67,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     // Show all student checking accounts
-    @GetMapping("/accounts/student-checking")
+    @GetMapping("/accounts/student-checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<StudentChecking> findAllStudentChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<StudentChecking> studentCheckingList = studentCheckingRepository.findAll();
@@ -79,7 +79,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     // Show all credit card accounts
-    @GetMapping("/accounts/credit-card")
+    @GetMapping("/accounts/credit-cards")
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCard> findAllCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<CreditCard> creditCardList = creditCardRepository.findAll();
@@ -115,7 +115,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     // Show all my checking accounts
-    @GetMapping("/my-accounts/checking")
+    @GetMapping("/my-accounts/checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<Checking> findAllMyChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<Checking> checkingList = checkingRepository.findMyCheckingAccounts(userDetails.getUser().getId());
@@ -127,7 +127,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     // Show all student checking accounts
-    @GetMapping("/my-accounts/student-checking")
+    @GetMapping("/my-accounts/student-checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<StudentChecking> findAllMyStudentChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<StudentChecking> studentCheckingList = studentCheckingRepository.findMyStudentCheckingAccounts(userDetails.getUser().getId());
@@ -139,7 +139,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     // Show all my credit card accounts
-    @GetMapping("/my-accounts/credit-card")
+    @GetMapping("/my-accounts/credit-cards")
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCard> findAllMyCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<CreditCard> creditCardList = creditCardRepository.findMyCreditCardAccounts(userDetails.getUser().getId());
@@ -186,7 +186,7 @@ public class AccountControllerImpl implements AccountController {
         return account;
     }
 
-    // Create checking account if primawy owner is more than 24 and student checking if he/she is younger
+    // Create checking account if primary owner is older than 24 and student checking if he/she is younger
     @PostMapping("/new/checking")
     @ResponseStatus(HttpStatus.CREATED)
     public Account createChecking(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -199,6 +199,7 @@ public class AccountControllerImpl implements AccountController {
 
         if(primaryOwnerAge>=24) {
             Checking checking = new Checking();
+            System.out.println("\n\n\nHa pasado por aquí\n\n\n");
             if (checkingDTO.getSecondaryOwnerId().isPresent()) {
                 AccountHolder secondaryOwner = accountHolderRepository.findById(checkingDTO.getSecondaryOwnerId().get())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
@@ -220,7 +221,7 @@ public class AccountControllerImpl implements AccountController {
         return studentCheckingRepository.save(studentChecking);
     }
 
-    // Create credit card
+    // Create credit card account
     @PostMapping("/new/credit-card")
     @ResponseStatus(HttpStatus.CREATED)
     public CreditCard createCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -273,14 +274,14 @@ public class AccountControllerImpl implements AccountController {
         return creditCardRepository.save(creditCard);
     }
 
-    // Create credit card
+    // Create savings account
     @PostMapping("/new/savings")
     @ResponseStatus(HttpStatus.CREATED)
     public Savings createSavingsAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
                                        @RequestBody @Valid SavingsDTO savingsDTO){
         Savings savings = new Savings();
-        Money balance = savings.getBalance();
-        String secretKey = savings.getSecretKey();
+        Money balance = savingsDTO.getBalance();
+        String secretKey = savingsDTO.getSecretKey();
         AccountHolder primaryOwner = accountHolderRepository.findById(savingsDTO.getPrimaryOwnerId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
         Optional<Money> minimumBalance = savingsDTO.getMinimumBalance();

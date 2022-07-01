@@ -19,6 +19,10 @@ public class CheckingDTO {
     private String secretKey;
 
     //CONSTRUCTORS
+
+    public CheckingDTO() {
+    }
+
     public CheckingDTO(Money balance, Long primaryOwnerId, String secretKey) {
         this.balance = balance;
         this.primaryOwnerId = primaryOwnerId;

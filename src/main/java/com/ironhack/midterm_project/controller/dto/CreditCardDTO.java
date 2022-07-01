@@ -62,6 +62,13 @@ public class CreditCardDTO {
         this.interestRate = interestRate;
     }
 
+    public CreditCardDTO(Money balance, Long primaryOwnerId, Long secondaryOwnerId, String secretKey) {
+        this.balance = balance;
+        this.primaryOwnerId = primaryOwnerId;
+        this.secondaryOwnerId = secondaryOwnerId;
+        this.secretKey = secretKey;
+    }
+
     public CreditCardDTO(Money balance, Long primaryOwnerId, String secretKey, Money creditLimit) {
         this.balance = balance;
         this.primaryOwnerId = primaryOwnerId;

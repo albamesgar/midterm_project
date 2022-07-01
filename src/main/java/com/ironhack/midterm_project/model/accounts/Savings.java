@@ -34,7 +34,7 @@ public class Savings extends Account{
     // CONSTRUCTORS
     public Savings() {
         this.minimumBalance = new Money(new BigDecimal(1000));
-        this.interestRate = new BigDecimal(0.0025);
+        this.interestRate = new BigDecimal("0.0025");
         this.lastTimeInterestApplied = this.creationDate;
     }
 
@@ -42,7 +42,7 @@ public class Savings extends Account{
                    LocalDate creationDate) {
         super(balance, primaryOwner, secretKey, creationDate);
         this.minimumBalance = new Money(new BigDecimal(1000));
-        this.interestRate = new BigDecimal(0.0025);
+        this.interestRate = new BigDecimal("0.0025");
         this.lastTimeInterestApplied = this.creationDate;
     }
 
@@ -50,7 +50,7 @@ public class Savings extends Account{
                    LocalDate creationDate) {
         super(balance, primaryOwner, secondaryOwner, secretKey, creationDate);
         this.minimumBalance = new Money(new BigDecimal(1000));
-        this.interestRate = new BigDecimal(0.0025);
+        this.interestRate = new BigDecimal("0.0025");
         this.lastTimeInterestApplied = this.creationDate;
     }
 
@@ -74,7 +74,7 @@ public class Savings extends Account{
                    LocalDate creationDate) {
         super(balance, primaryOwner, secretKey, creationDate);
         this.minimumBalance = minimumBalance;
-        this.interestRate = new BigDecimal(0.0025);
+        this.interestRate = new BigDecimal("0.0025");
         this.lastTimeInterestApplied = this.creationDate;
     }
 
@@ -98,7 +98,7 @@ public class Savings extends Account{
                    String secretKey, Money minimumBalance, LocalDate creationDate) {
         super(balance, primaryOwner, secondaryOwner, secretKey, creationDate);
         this.minimumBalance = minimumBalance;
-        this.interestRate = new BigDecimal(0.0025);
+        this.interestRate = new BigDecimal("0.0025");
         this.lastTimeInterestApplied = this.creationDate;
     }
 

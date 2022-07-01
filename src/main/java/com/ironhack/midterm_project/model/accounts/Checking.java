@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class Checking extends Account{
-    @Null(message = "You can not change the minimum balance")
+//    @Null(message = "You can not change the minimum balance")
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "minimum_balance_amount")),
@@ -24,7 +24,7 @@ public class Checking extends Account{
     })
     private final Money minimumBalance; //250
 
-    @Null(message = "You can not change the monthly maintenance fee")
+//    @Null(message = "You can not change the monthly maintenance fee")
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "monthly_maintenance_fee_amount")),

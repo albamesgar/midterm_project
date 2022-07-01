@@ -1,14 +1,13 @@
 package com.ironhack.midterm_project.controller.impl;
 
 import com.ironhack.midterm_project.classes.Money;
-import com.ironhack.midterm_project.controller.dto.CheckingDTO;
-import com.ironhack.midterm_project.controller.dto.CreditCardDTO;
-import com.ironhack.midterm_project.controller.dto.SavingsDTO;
+import com.ironhack.midterm_project.controller.dto.*;
 import com.ironhack.midterm_project.controller.interfaces.AccountController;
 import com.ironhack.midterm_project.model.accounts.*;
 import com.ironhack.midterm_project.model.users.AccountHolder;
 import com.ironhack.midterm_project.repository.*;
 import com.ironhack.midterm_project.security.CustomUserDetails;
+import com.ironhack.midterm_project.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,57 +23,31 @@ import java.util.Optional;
 
 @RestController
 public class AccountControllerImpl implements AccountController {
-    // See my account (account holder) -> GET
-    // See all accounts (admin) -> GET
-    // Create account (admin) -> POST
-    // Set account balance (admin) -> PATCH
-
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
-    private CheckingRepository checkingRepository;
-    @Autowired
     private StudentCheckingRepository studentCheckingRepository;
     @Autowired
-    private CreditCardRepository creditCardRepository;
-    @Autowired
-    private SavingsRepository savingsRepository;
-    @Autowired
-    private AccountHolderRepository accountHolderRepository;
+    private AccountService accountService;
 
     // Show all accounts
     @GetMapping("/accounts")
     @ResponseStatus(HttpStatus.OK)
     public List<Account> findAllAccounts(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Account> accountList = accountRepository.findAll();
-        for (Account account : accountList){
-            account.getBalance();
-            accountRepository.save(account);
-        }
-        return accountRepository.findAll();
+        return accountService.findAllAccounts();
     }
 
     // Show all checking accounts
     @GetMapping("/accounts/checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<Checking> findAllChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Checking> checkingList = checkingRepository.findAll();
-        for (Checking checking : checkingList){
-            checking.getBalance();
-            checkingRepository.save(checking);
-        }
-        return checkingRepository.findAll();
+        return accountService.findAllChecking();
     }
 
     // Show all student checking accounts
     @GetMapping("/accounts/student-checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<StudentChecking> findAllStudentChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<StudentChecking> studentCheckingList = studentCheckingRepository.findAll();
-        for (StudentChecking studentChecking : studentCheckingList){
-            studentChecking.getBalance();
-            studentCheckingRepository.save(studentChecking);
-        }
         return studentCheckingRepository.findAll();
     }
 
@@ -82,108 +55,75 @@ public class AccountControllerImpl implements AccountController {
     @GetMapping("/accounts/credit-cards")
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCard> findAllCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<CreditCard> creditCardList = creditCardRepository.findAll();
-        for (CreditCard creditCard : creditCardList){
-            creditCard.getBalance();
-            creditCardRepository.save(creditCard);
-        }
-        return creditCardRepository.findAll();
+        return accountService.findAllCreditCard();
     }
 
     // Show all savings accounts
     @GetMapping("/accounts/savings")
     @ResponseStatus(HttpStatus.OK)
     public List<Savings> findAllSavings(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Savings> savingsList = savingsRepository.findAll();
-        for (Savings savings : savingsList){
-            savings.getBalance();
-            savingsRepository.save(savings);
-        }
-        return savingsRepository.findAll();
+        return accountService.findAllSavings();
     }
 
     // Show all my accounts
     @GetMapping("/my-accounts")
     @ResponseStatus(HttpStatus.OK)
     public List<Account> findAllMyAccounts(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Account> accountList = accountRepository.findMyAccounts(userDetails.getUser().getId());
-        for (Account account : accountList){
-            account.getBalance();
-            accountRepository.save(account);
-        }
-        return accountRepository.findMyAccounts(userDetails.getUser().getId());
+        Long userId = userDetails.getUser().getId();
+        return accountService.findAllMyAccounts(userId);
     }
 
     // Show all my checking accounts
     @GetMapping("/my-accounts/checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<Checking> findAllMyChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Checking> checkingList = checkingRepository.findMyCheckingAccounts(userDetails.getUser().getId());
-        for (Checking checking : checkingList){
-            checking.getBalance();
-            checkingRepository.save(checking);
-        }
-        return checkingRepository.findMyCheckingAccounts(userDetails.getUser().getId());
+        Long userId = userDetails.getUser().getId();
+
+        return accountService.findAllMyChecking(userId);
     }
 
     // Show all student checking accounts
     @GetMapping("/my-accounts/student-checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<StudentChecking> findAllMyStudentChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<StudentChecking> studentCheckingList = studentCheckingRepository.findMyStudentCheckingAccounts(userDetails.getUser().getId());
-        for (StudentChecking studentChecking : studentCheckingList){
-            studentChecking.getBalance();
-            studentCheckingRepository.save(studentChecking);
-        }
-        return studentCheckingRepository.findMyStudentCheckingAccounts(userDetails.getUser().getId());
+        Long userId = userDetails.getUser().getId();
+        return studentCheckingRepository.findMyStudentCheckingAccounts(userId);
     }
 
     // Show all my credit card accounts
     @GetMapping("/my-accounts/credit-cards")
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCard> findAllMyCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<CreditCard> creditCardList = creditCardRepository.findMyCreditCardAccounts(userDetails.getUser().getId());
-        for (CreditCard creditCard : creditCardList){
-            creditCard.getBalance();
-            creditCardRepository.save(creditCard);
-        }
-        return creditCardRepository.findMyCreditCardAccounts(userDetails.getUser().getId());
+        Long userId = userDetails.getUser().getId();
+
+        return accountService.findAllMyCreditCard(userId);
     }
 
     // Show all my savings accounts
     @GetMapping("/my-accounts/savings")
     @ResponseStatus(HttpStatus.OK)
     public List<Savings> findAllMySavings(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Savings> savingsList = savingsRepository.findMySavingsAccounts(userDetails.getUser().getId());
-        for (Savings savings : savingsList){
-            savings.getBalance();
-            savingsRepository.save(savings);
-        }
-        return savingsRepository.findMySavingsAccounts(userDetails.getUser().getId());
+        Long userId = userDetails.getUser().getId();
+
+        return accountService.findAllMySavings(userId);
     }
 
     // Show account by id (admin)
     @GetMapping("/accounts/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Account findAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
-                               @PathVariable Long id) { //Va en service
-        Account account = accountRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
-        account.getBalance();
-        accountRepository.save(account);
-        return account;
+                               @PathVariable Long id) {
+        return accountService.findAccount(id);
     }
 
     // Show my account by id (account holder)
     @GetMapping("/my-accounts/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Account findMyAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
-                               @PathVariable Long id) { //Va en service
-        Account account = accountRepository.findMyAccountById(userDetails.getUser().getId(),id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
-        account.getBalance();
-        accountRepository.save(account);
-        return account;
+                               @PathVariable Long id) {
+        Long userId = userDetails.getUser().getId();
+
+        return accountService.findMyAccount(userId,id);
     }
 
     // Create checking account if primary owner is older than 24 and student checking if he/she is younger
@@ -196,29 +136,7 @@ public class AccountControllerImpl implements AccountController {
         Long primaryOwnerId = checkingDTO.getPrimaryOwnerId();
         Optional<Long> optionalSecondaryOwnerId = checkingDTO.getSecondaryOwnerId();
 
-        AccountHolder primaryOwner = accountHolderRepository.findById(primaryOwnerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-        int primaryOwnerAge = Period.between(primaryOwner.getDateOfBirth().toLocalDate(),LocalDate.now()).getYears();
-
-        if(primaryOwnerAge>=24) {
-            Checking checking = new Checking(balance, primaryOwner, secretKey, LocalDate.now());
-
-            if (optionalSecondaryOwnerId.isPresent()) {
-                AccountHolder secondaryOwner = accountHolderRepository.findById(optionalSecondaryOwnerId.get())
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-                checking = new Checking(balance, primaryOwner, secondaryOwner, secretKey, LocalDate.now());
-            }
-            return checkingRepository.save(checking);
-        }
-
-        StudentChecking studentChecking = new StudentChecking(balance, primaryOwner, secretKey, LocalDate.now());
-
-        if (optionalSecondaryOwnerId.isPresent()) {
-            AccountHolder secondaryOwner = accountHolderRepository.findById(optionalSecondaryOwnerId.get())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-            studentChecking = new StudentChecking(balance, primaryOwner, secondaryOwner, secretKey, LocalDate.now());
-        }
-        return studentCheckingRepository.save(studentChecking);
+        return accountService.createChecking(balance,secretKey,primaryOwnerId,optionalSecondaryOwnerId);
     }
 
     // Create credit card account
@@ -228,24 +146,13 @@ public class AccountControllerImpl implements AccountController {
                                        @RequestBody @Valid CreditCardDTO creditCardDTO){
         Money balance = creditCardDTO.getBalance();
         String secretKey = creditCardDTO.getSecretKey();
-        Money creditLimit = creditCardDTO.getCreditLimit();
+        Money creditLimit = new Money(creditCardDTO.getCreditLimitAmount(), creditCardDTO.getCreditLimitCurrency());
         BigDecimal interestRate = creditCardDTO.getInterestRate();
         Long primaryOwnerId = creditCardDTO.getPrimaryOwnerId();
         Optional<Long> optionalSecondaryOwnerId = creditCardDTO.getSecondaryOwnerId();
 
-        AccountHolder primaryOwner = accountHolderRepository.findById(primaryOwnerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-
-        CreditCard creditCard = new CreditCard(balance, primaryOwner, secretKey, creditLimit,
-                    interestRate, LocalDate.now());
-
-        if (optionalSecondaryOwnerId.isPresent()){
-            AccountHolder secondaryOwner = accountHolderRepository.findById(optionalSecondaryOwnerId.get())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-            creditCard = new CreditCard(balance, primaryOwner, secondaryOwner,secretKey,creditLimit,
-                        interestRate,LocalDate.now());
-        }
-        return creditCardRepository.save(creditCard);
+        return accountService.createCreditCard(balance,secretKey,creditLimit,interestRate,primaryOwnerId,
+                optionalSecondaryOwnerId);
     }
 
     // Create savings account
@@ -255,33 +162,77 @@ public class AccountControllerImpl implements AccountController {
                                        @RequestBody @Valid SavingsDTO savingsDTO){
         Money balance = savingsDTO.getBalance();
         String secretKey = savingsDTO.getSecretKey();
-        Money minimumBalance = savingsDTO.getMinimumBalance();
+        Money minimumBalance = new Money(savingsDTO.getMinimumBalanceAmount(),
+                savingsDTO.getMinimumBalanceCurrency());
         BigDecimal interestRate = savingsDTO.getInterestRate();
         Long primaryOwnerId = savingsDTO.getPrimaryOwnerId();
         Optional<Long> optionalSecondaryOwnerId = savingsDTO.getSecondaryOwnerId();
 
-        AccountHolder primaryOwner = accountHolderRepository.findById(primaryOwnerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
+        return accountService.createSavingsAccount(balance,secretKey,minimumBalance,interestRate,primaryOwnerId,
+                optionalSecondaryOwnerId);
+    }
 
-        Savings savings = new Savings(balance, primaryOwner, secretKey, minimumBalance,
-                    interestRate, LocalDate.now());
+    // Modify checking account data (admin)
+    @PutMapping("/accounts/checkings/{id}/modify-data")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void modifyCheckingAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
+                              @PathVariable Long id, @RequestBody @Valid CheckingDTO checkingDTO){
+        Money balance = checkingDTO.getBalance();
+        String secretKey = checkingDTO.getSecretKey();
+        Long primaryOwnerId = checkingDTO.getPrimaryOwnerId();
+        Optional<Long> optionalSecondaryOwnerId = checkingDTO.getSecondaryOwnerId();
 
-        if (optionalSecondaryOwnerId.isPresent()){
-            AccountHolder secondaryOwner = accountHolderRepository.findById(optionalSecondaryOwnerId.get())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Holder not found"));
-             savings = new Savings(balance, primaryOwner, secondaryOwner,secretKey,minimumBalance,
-                        interestRate,LocalDate.now());
-        }
-        return savingsRepository.save(savings);
+        accountService.modifyCheckingAccount(balance,secretKey,primaryOwnerId,optionalSecondaryOwnerId,id);
+    }
+
+    // Modify credit card account data (admin)
+    @PutMapping("/accounts/credit-cards/{id}/modify-data")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void modifyCreditCardAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                      @PathVariable Long id, @RequestBody @Valid CreditCardDTO creditCardDTO){
+        Money balance = creditCardDTO.getBalance();
+        String secretKey = creditCardDTO.getSecretKey();
+        Money creditLimit = new Money(creditCardDTO.getCreditLimitAmount(), creditCardDTO.getCreditLimitCurrency());
+        BigDecimal interestRate = creditCardDTO.getInterestRate();
+        Long primaryOwnerId = creditCardDTO.getPrimaryOwnerId();
+        Optional<Long> optionalSecondaryOwnerId = creditCardDTO.getSecondaryOwnerId();
+
+        accountService.modifyCreditCardAccount(balance,secretKey,creditLimit,interestRate,primaryOwnerId,
+                optionalSecondaryOwnerId,id);
+    }
+
+    // Modify savings account data (admin)
+    @PutMapping("/accounts/savings/{id}/modify-data")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void modifySavingsAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                      @PathVariable Long id, @RequestBody @Valid SavingsDTO savingsDTO){
+        Money balance = savingsDTO.getBalance();
+        String secretKey = savingsDTO.getSecretKey();
+        Money minimumBalance = new Money(savingsDTO.getMinimumBalanceAmount(), savingsDTO.getMinimumBalanceCurrency());
+        BigDecimal interestRate = savingsDTO.getInterestRate();
+        Long primaryOwnerId = savingsDTO.getPrimaryOwnerId();
+        Optional<Long> optionalSecondaryOwnerId = savingsDTO.getSecondaryOwnerId();
+
+        accountService.modifySavingsAccount(balance,secretKey,minimumBalance,interestRate,primaryOwnerId,
+                optionalSecondaryOwnerId,id);
+    }
+
+    // Modify balance of an account (admin)
+    @PatchMapping("/accounts/{id}/modify-balance")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void modifyBalance(@AuthenticationPrincipal CustomUserDetails userDetails,
+                              @PathVariable Long id, @RequestBody BalanceDTO balanceDTO){
+        Money newBalance = balanceDTO.getNewBalance();
+
+        accountService.modifyBalance(id,newBalance);
     }
 
     // Delete account by id (admin)
     @DeleteMapping("/delete/account/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
-                               @PathVariable Long id) { //Va en service
-        Account account = accountRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));;
+                               @PathVariable Long id) {
+        Account account = accountService.findAccount(id);
         accountRepository.delete(account);
     }
 }

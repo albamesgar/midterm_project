@@ -63,6 +63,14 @@ public class Checking extends Account{
         return monthlyMaintenanceFee;
     }
 
+    public LocalDate getLastTimeMaintenanceFeeApplied() {
+        return lastTimeMaintenanceFeeApplied;
+    }
+
+    public void setLastTimeMaintenanceFeeApplied(LocalDate lastTimeMaintenanceFeeApplied) {
+        this.lastTimeMaintenanceFeeApplied = lastTimeMaintenanceFeeApplied;
+    }
+
     // Deduct penalty fee if balance below minimum
     @Override
     public void setBalance(Money balance) {
@@ -72,16 +80,5 @@ public class Checking extends Account{
         if (actualBalance.getAmount().compareTo(BigDecimal.ZERO) < 0){
             balance.decreaseAmount(super.getPenaltyFee());
         }
-    }
-
-    @Override
-    public Money getBalance() {
-        if (TimeDifference.monthDifference(lastTimeMaintenanceFeeApplied)){
-            Money balance = super.getBalance();
-            Money fee = getMonthlyMaintenanceFee();
-            balance.decreaseAmount(fee);
-            super.setBalance(balance);
-        }
-        return super.getBalance();
     }
 }

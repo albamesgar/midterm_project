@@ -16,7 +16,6 @@ import java.time.LocalDate;
 @PrimaryKeyJoinColumn(name = "id")
 public class CreditCard extends Account{
     @Embedded
-//    @DecimalMax(value = "100000", message = "The money credit can not be higher than 100000")
     @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "credit_limit_amount")),
             @AttributeOverride(name = "currency", column = @Column(name = "credit_limit_currency"))
@@ -79,16 +78,4 @@ public class CreditCard extends Account{
     public LocalDate getLastTimeInterestApplied() {
         return lastTimeInterestApplied;
     }
-
-    @Override
-    public Money getBalance() {
-        if (TimeDifference.monthDifference(lastTimeInterestApplied)){
-            Money balance = super.getBalance();
-            BigDecimal interest = balance.getAmount().multiply(interestRate).divide(new BigDecimal("12"));
-            balance.increaseAmount(interest);
-            super.setBalance(balance);
-        }
-        return super.getBalance();
-    }
-
 }

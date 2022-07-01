@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 public class CheckingDTO {
+    @NotNull(message = "Initial balance can not be null")
     private Money balance;
 
     @NotNull(message = "Primary owner can not be null")

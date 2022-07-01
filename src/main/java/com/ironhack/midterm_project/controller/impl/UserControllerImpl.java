@@ -11,6 +11,7 @@ import com.ironhack.midterm_project.repository.AdminRepository;
 import com.ironhack.midterm_project.repository.ThirdPartyRepository;
 import com.ironhack.midterm_project.repository.UserRepository;
 import com.ironhack.midterm_project.security.CustomUserDetails;
+import com.ironhack.midterm_project.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,9 +24,6 @@ import java.util.Optional;
 
 @RestController
 public class UserControllerImpl implements UserController {
-    // View users (admin?) -> GET
-    // Create users (admin) -> POST
-
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -34,6 +32,8 @@ public class UserControllerImpl implements UserController {
     private AccountHolderRepository accountHolderRepository;
     @Autowired
     private ThirdPartyRepository thirdPartyRepository;
+    @Autowired
+    private UserService userService;
 
     //Show all users -> admins and account-holders (admin)
     @GetMapping("/users")
@@ -46,8 +46,7 @@ public class UserControllerImpl implements UserController {
     @GetMapping("/users/admins")
     @ResponseStatus(HttpStatus.OK)
     public List<Admin> findAdmins(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Admin> admins = adminRepository.findAll();
-        return admins;
+        return adminRepository.findAll();
     }
 
     //Show all account-holders (admin)
@@ -67,40 +66,31 @@ public class UserControllerImpl implements UserController {
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
     public User findUserById(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable Long id) {
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        return user;
+        return userService.findUserById(id);
     }
 
     //Show third party by id (admin)
     @GetMapping("/users/third-parties/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ThirdParty findThirdPartyById(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable Long id) {
-        ThirdParty thirdParty = thirdPartyRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Third Party not found"));
-        return thirdParty;
+        return userService.findThirdPartyById(id);
     }
 
     //Show my user data (account-holder and admin)
     @GetMapping("/my-user")
     @ResponseStatus(HttpStatus.OK)
     public User findMyUser(@AuthenticationPrincipal CustomUserDetails userDetails){
-        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        return user;
+        Long userId = userDetails.getUser().getId();
+
+        return userService.findMyUser(userId);
     }
 
-    //Create admin ???
+    //Create admin
     @PostMapping("/new/admin")
     @ResponseStatus(HttpStatus.CREATED)
     public Admin createAdmin(@AuthenticationPrincipal CustomUserDetails userDetails,
                              @RequestBody @Valid Admin admin) {
-        for (Admin admin1 : adminRepository.findAll()){
-            if (admin.equals(admin1)){
-                throw new ResponseStatusException(HttpStatus.IM_USED, "Admin already exists");
-            }
-        }
-        return adminRepository.save(admin);
+        return userService.createAdmin(admin);
     }
 
     //Create account holder
@@ -108,34 +98,54 @@ public class UserControllerImpl implements UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public AccountHolder createAccountHolder(@AuthenticationPrincipal CustomUserDetails userDetails,
                                              @RequestBody @Valid AccountHolder accountHolder) {
-        for (AccountHolder accountHolder1 : accountHolderRepository.findAll()){
-            if (accountHolder.equals(accountHolder1)){
-                throw new ResponseStatusException(HttpStatus.IM_USED, "Account Holder already exists");
-            }
-        }
-        return accountHolderRepository.save(accountHolder);
+        return userService.createAccountHolder(accountHolder);
     }
 
     //Create third-party
     @PostMapping("/new/third-party")
     @ResponseStatus(HttpStatus.CREATED)
     public ThirdParty createThirdParty(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                       @RequestBody ThirdParty thirdParty){
-        for (ThirdParty thirdParty1 : thirdPartyRepository.findAll()){
-            if (thirdParty.equals(thirdParty1)){
-                throw new ResponseStatusException(HttpStatus.IM_USED, "Third Party already exists");
-            }
-        }
-        return thirdPartyRepository.save(thirdParty);
+                                       @RequestBody @Valid ThirdParty thirdParty){
+        return userService.createThirdParty(thirdParty);
+    }
+
+    //Modify admin data
+    @PutMapping("/users/admins/{id}/modify-data")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void modifyAdmin(@AuthenticationPrincipal CustomUserDetails userDetails,
+                             @PathVariable Long id,@RequestBody @Valid Admin admin) {
+        userService.modifyAdmin(id,admin);
+    }
+
+    //Modify account holder data
+    @PutMapping("/users/account-holders/{id}/modify-data")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void modifyAccountHolder(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                             @PathVariable Long id,@RequestBody @Valid AccountHolder accountHolder) {
+        userService.modifyAccountHolder(id, accountHolder);
+    }
+
+    //Modify third-party data
+    @PutMapping("/users/third-parties/{id}/modify-data")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void modifyThirdParty(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                       @PathVariable Long id,@RequestBody @Valid ThirdParty thirdParty){
+        userService.modifyThirdParty(id, thirdParty);
     }
 
     // Delete user by id (admin)
     @DeleteMapping("/delete/user/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,
-                              @PathVariable Long id) { //Va en service
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));;
-        userRepository.delete(user);
+                              @PathVariable Long id) {
+        userService.deleteUser(id);
+    }
+
+    // Delete user by id (admin)
+    @DeleteMapping("/delete/third-party/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteThirdParty(@AuthenticationPrincipal CustomUserDetails userDetails,
+                           @PathVariable Long id) {
+        userService.deleteThirdParty(id);
     }
 }

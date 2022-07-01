@@ -75,6 +75,14 @@ public class Savings extends Account{
         this.interestRate = interestRate;
     }
 
+    public LocalDate getLastTimeInterestApplied() {
+        return lastTimeInterestApplied;
+    }
+
+    public void setLastTimeInterestApplied(LocalDate lastTimeInterestApplied) {
+        this.lastTimeInterestApplied = lastTimeInterestApplied;
+    }
+
     // Deduct penalty fee if balance below minimum
     @Override
     public void setBalance(Money balance) {

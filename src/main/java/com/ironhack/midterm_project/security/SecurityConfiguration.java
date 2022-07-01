@@ -23,6 +23,9 @@ public class SecurityConfiguration {
                 .antMatchers(HttpMethod.GET,"/my-accounts/**").hasRole("ACCOUNT_HOLDER")
                 .antMatchers(HttpMethod.GET, "/my-user").hasAnyRole("ADMIN", "ACCOUNT_HOLDER")
                 .antMatchers(HttpMethod.POST, "/new/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/users/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/accounts/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/accounts/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/delete/**").hasRole("ADMIN")
                 .anyRequest().permitAll();
         return http.build();

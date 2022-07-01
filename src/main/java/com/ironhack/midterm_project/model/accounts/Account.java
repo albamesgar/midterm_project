@@ -142,4 +142,44 @@ public abstract class Account {
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
     }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public AccountType getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType;
+    }
+
+    public Set<Transaction> getTransactionsDone() {
+        return transactionsDone;
+    }
+
+    public void setTransactionsDone(Set<Transaction> transactionsDone) {
+        this.transactionsDone = transactionsDone;
+    }
+
+    public Set<Transaction> getTransactionsReceived() {
+        return transactionsReceived;
+    }
+
+    public void setTransactionsReceived(Set<Transaction> transactionsReceived) {
+        this.transactionsReceived = transactionsReceived;
+    }
 }

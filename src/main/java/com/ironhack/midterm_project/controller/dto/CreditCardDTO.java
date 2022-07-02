@@ -17,10 +17,9 @@ public class CreditCardDTO {
     @NotNull(message = "Primary owner can not be null")
     private Long primaryOwnerId;
 
-    private Long secondaryOwnerId;
+    private Long secondaryOwnerId=0L;
 
     @NotNull(message = "Secret key can not be null")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String secretKey;
 
     @DecimalMax(value = "100000", message = "The credit limit can not be higher than 100000")
@@ -50,6 +49,25 @@ public class CreditCardDTO {
         this.balance = balance;
         this.primaryOwnerId = primaryOwnerId;
         this.secondaryOwnerId = secondaryOwnerId;
+        this.secretKey = secretKey;
+        this.creditLimitAmount = creditLimitAmount;
+        this.interestRate = interestRate;
+    }
+
+    public CreditCardDTO(Money balance, Long primaryOwnerId, BigDecimal creditLimitAmount,
+                         Currency creditLimitCurrency, String secretKey,BigDecimal interestRate) {
+        this.balance = balance;
+        this.primaryOwnerId = primaryOwnerId;
+        this.secretKey = secretKey;
+        this.creditLimitAmount = creditLimitAmount;
+        this.creditLimitCurrency = creditLimitCurrency;
+        this.interestRate = interestRate;
+    }
+
+    public CreditCardDTO(Money balance, Long primaryOwnerId,BigDecimal creditLimitAmount,
+                         String secretKey,BigDecimal interestRate) {
+        this.balance = balance;
+        this.primaryOwnerId = primaryOwnerId;
         this.secretKey = secretKey;
         this.creditLimitAmount = creditLimitAmount;
         this.interestRate = interestRate;
@@ -136,8 +154,8 @@ public class CreditCardDTO {
         this.primaryOwnerId = primaryOwnerId;
     }
 
-    public Optional<Long> getSecondaryOwnerId() {
-        return Optional.ofNullable(secondaryOwnerId);
+    public Long getSecondaryOwnerId() {
+        return secondaryOwnerId;
     }
 
     public void setSecondaryOwnerId(Long secondaryOwnerId) {

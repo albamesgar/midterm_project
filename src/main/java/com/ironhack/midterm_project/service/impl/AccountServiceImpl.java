@@ -187,7 +187,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Account checkingLogic(Money balance,String secretKey,Long primaryOwnerId,
-                                 Optional<Long> optionalSecondaryOwnerId){
+                                 Long optionalSecondaryOwnerId){
         secretKey = PasswordEncodeUtil.encodePassword(secretKey);
         AccountHolder primaryOwner = findAccountHolder(primaryOwnerId);
         int primaryOwnerAge = Period.between(primaryOwner.getDateOfBirth().toLocalDate(),LocalDate.now()).getYears();
@@ -195,8 +195,8 @@ public class AccountServiceImpl implements AccountService {
         if(primaryOwnerAge>=24) {
             Checking checking = new Checking(balance, primaryOwner, secretKey, LocalDate.now());
 
-            if (optionalSecondaryOwnerId.isPresent()) {
-                AccountHolder secondaryOwner = findAccountHolder(optionalSecondaryOwnerId.get());
+            if (optionalSecondaryOwnerId!=0L) {
+                AccountHolder secondaryOwner = findAccountHolder(optionalSecondaryOwnerId);
                 checking = new Checking(balance, primaryOwner, secondaryOwner, secretKey, LocalDate.now());
             }
             return checking;
@@ -204,21 +204,21 @@ public class AccountServiceImpl implements AccountService {
 
         StudentChecking studentChecking = new StudentChecking(balance, primaryOwner, secretKey, LocalDate.now());
 
-        if (optionalSecondaryOwnerId.isPresent()) {
-            AccountHolder secondaryOwner = findAccountHolder(optionalSecondaryOwnerId.get());
+        if (optionalSecondaryOwnerId!=0L) {
+            AccountHolder secondaryOwner = findAccountHolder(optionalSecondaryOwnerId);
             studentChecking = new StudentChecking(balance, primaryOwner, secondaryOwner, secretKey, LocalDate.now());
         }
         return studentChecking;
     }
 
     public Account createChecking(Money balance,String secretKey,Long primaryOwnerId,
-                                  Optional<Long> optionalSecondaryOwnerId) {
+                                  Long optionalSecondaryOwnerId) {
         Account account = checkingLogic(balance,secretKey,primaryOwnerId,optionalSecondaryOwnerId);
         return accountRepository.save(account);
     }
 
     public void modifyCheckingAccount(Money balance,String secretKey,Long primaryOwnerId,
-                               Optional<Long> optionalSecondaryOwnerId,Long id){
+                               Long optionalSecondaryOwnerId,Long id){
         Account originalAccount = findAccount(id);
         Account account = checkingLogic(balance,secretKey,primaryOwnerId,optionalSecondaryOwnerId);
         account.setId(originalAccount.getId());
@@ -226,15 +226,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public CreditCard creditCardLogic(Money balance,String secretKey,Money creditLimit,BigDecimal interestRate,
-                                      Long primaryOwnerId, Optional<Long> optionalSecondaryOwnerId){
+                                      Long primaryOwnerId, Long optionalSecondaryOwnerId){
         secretKey = PasswordEncodeUtil.encodePassword(secretKey);
         AccountHolder primaryOwner = findAccountHolder(primaryOwnerId);
 
         CreditCard creditCard = new CreditCard(balance, primaryOwner, secretKey, creditLimit,
                 interestRate, LocalDate.now());
 
-        if (optionalSecondaryOwnerId.isPresent()){
-            AccountHolder secondaryOwner = findAccountHolder(optionalSecondaryOwnerId.get());
+        if (optionalSecondaryOwnerId!=0L){
+            AccountHolder secondaryOwner = findAccountHolder(optionalSecondaryOwnerId);
             creditCard = new CreditCard(balance, primaryOwner, secondaryOwner,secretKey,creditLimit,
                     interestRate,LocalDate.now());
         }
@@ -242,14 +242,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public CreditCard createCreditCard(Money balance,String secretKey,Money creditLimit,BigDecimal interestRate,
-                                       Long primaryOwnerId, Optional<Long> optionalSecondaryOwnerId){
+                                       Long primaryOwnerId, Long optionalSecondaryOwnerId){
         CreditCard creditCard = creditCardLogic(balance,secretKey,creditLimit,interestRate,primaryOwnerId,
                 optionalSecondaryOwnerId);
         return creditCardRepository.save(creditCard);
     }
 
     public void modifyCreditCardAccount(Money balance,String secretKey,Money creditLimit,BigDecimal interestRate,
-                                        Long primaryOwnerId, Optional<Long> optionalSecondaryOwnerId, Long id){
+                                        Long primaryOwnerId, Long optionalSecondaryOwnerId, Long id){
         Account originalAccount = findAccount(id);
         CreditCard creditCard = creditCardLogic(balance,secretKey,creditLimit,interestRate,primaryOwnerId,
                 optionalSecondaryOwnerId);
@@ -258,15 +258,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Savings savingsLogic(Money balance,String secretKey,Money minimumBalance,BigDecimal interestRate,
-                                Long primaryOwnerId,Optional<Long> optionalSecondaryOwnerId){
+                                Long primaryOwnerId,Long optionalSecondaryOwnerId){
         secretKey = PasswordEncodeUtil.encodePassword(secretKey);
         AccountHolder primaryOwner = findAccountHolder(primaryOwnerId);
 
         Savings savings = new Savings(balance, primaryOwner, secretKey, minimumBalance,
                 interestRate, LocalDate.now());
 
-        if (optionalSecondaryOwnerId.isPresent()){
-            AccountHolder secondaryOwner = findAccountHolder(optionalSecondaryOwnerId.get());
+        if (optionalSecondaryOwnerId!=0L){
+            AccountHolder secondaryOwner = findAccountHolder(optionalSecondaryOwnerId);
             savings = new Savings(balance, primaryOwner, secondaryOwner,secretKey,minimumBalance,
                     interestRate,LocalDate.now());
         }
@@ -274,14 +274,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Savings createSavingsAccount(Money balance,String secretKey,Money minimumBalance,BigDecimal interestRate,
-                                        Long primaryOwnerId,Optional<Long> optionalSecondaryOwnerId){
+                                        Long primaryOwnerId,Long optionalSecondaryOwnerId){
         Savings savings = savingsLogic(balance,secretKey,minimumBalance,interestRate,primaryOwnerId,
                 optionalSecondaryOwnerId);
         return savingsRepository.save(savings);
     }
 
     public void modifySavingsAccount(Money balance,String secretKey,Money minimumBalance,BigDecimal interestRate,
-                                     Long primaryOwnerId,Optional<Long> optionalSecondaryOwnerId,Long id){
+                                     Long primaryOwnerId,Long optionalSecondaryOwnerId,Long id){
         Account originalAccount = findAccount(id);
         Savings savings = savingsLogic(balance,secretKey,minimumBalance,interestRate,primaryOwnerId,
                 optionalSecondaryOwnerId);

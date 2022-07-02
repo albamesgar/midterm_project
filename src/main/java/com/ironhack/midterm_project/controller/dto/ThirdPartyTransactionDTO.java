@@ -8,6 +8,15 @@ public class ThirdPartyTransactionDTO {
     Long accountId;
     String accountSecretKey;
 
+    public ThirdPartyTransactionDTO() {
+    }
+
+    public ThirdPartyTransactionDTO(Money amount, Long accountId, String accountSecretKey) {
+        this.amount = amount;
+        this.accountId = accountId;
+        this.accountSecretKey = accountSecretKey;
+    }
+
     public Money getAmount() {
         return amount;
     }

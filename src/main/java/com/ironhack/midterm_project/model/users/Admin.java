@@ -8,7 +8,14 @@ import javax.persistence.PrimaryKeyJoinColumn;
 public class Admin extends User{
     //can access the balance of any account and modify it
 
-//    public Admin() {
+    public Admin() {
+    }
+
+    public Admin(String username, String password, Role role) {
+        super(username, password, role);
+    }
+
+    //    public Admin() {
 //        Role role =new Role();
 //        role.setName("ADMIN");
 //        this.setRole(role);

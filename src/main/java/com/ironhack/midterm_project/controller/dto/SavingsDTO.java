@@ -17,10 +17,9 @@ public class SavingsDTO {
     @NotNull(message = "Primary owner can not be null")
     private Long primaryOwnerId;
 
-    private Long secondaryOwnerId;
+    private Long secondaryOwnerId=0L;
 
     @NotNull(message = "Secret key can not be null")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String secretKey;
 
 //    private MinimumBalanceDTO minimumBalance = new MinimumBalanceDTO(); //default 1000, min 100 when instantiated
@@ -156,8 +155,8 @@ public class SavingsDTO {
         this.primaryOwnerId = primaryOwnerId;
     }
 
-    public Optional<Long> getSecondaryOwnerId() {
-        return Optional.ofNullable(secondaryOwnerId);
+    public Long getSecondaryOwnerId() {
+        return secondaryOwnerId;
     }
 
     public void setSecondaryOwnerId(Long secondaryOwnerId) {

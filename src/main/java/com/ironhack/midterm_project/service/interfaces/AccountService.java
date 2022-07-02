@@ -23,16 +23,16 @@ public interface AccountService {
     Account findAccount(Long id);
     Account findMyAccount(Long userId, Long id);
     Account createChecking(Money balance, String secretKey, Long primaryOwnerId,
-                           Optional<Long> optionalSecondaryOwnerId);
+                           Long optionalSecondaryOwnerId);
     void modifyCheckingAccount(Money balance,String secretKey,Long primaryOwnerId,
-                          Optional<Long> optionalSecondaryOwnerId,Long id);
+                          Long optionalSecondaryOwnerId,Long id);
     CreditCard createCreditCard(Money balance, String secretKey, Money creditLimit, BigDecimal interestRate,
-                     Long primaryOwnerId, Optional<Long> optionalSecondaryOwnerId);
+                     Long primaryOwnerId, Long optionalSecondaryOwnerId);
     void modifyCreditCardAccount(Money balance,String secretKey,Money creditLimit,BigDecimal interestRate,
-                                 Long primaryOwnerId, Optional<Long> optionalSecondaryOwnerId, Long id);
+                                 Long primaryOwnerId, Long optionalSecondaryOwnerId, Long id);
     Savings createSavingsAccount(Money balance,String secretKey,Money minimumBalance,BigDecimal interestRate,
-                                 Long primaryOwnerId,Optional<Long> optionalSecondaryOwnerId);
+                                 Long primaryOwnerId,Long optionalSecondaryOwnerId);
     void modifySavingsAccount(Money balance,String secretKey,Money minimumBalance,BigDecimal interestRate,
-                              Long primaryOwnerId,Optional<Long> optionalSecondaryOwnerId,Long id);
+                              Long primaryOwnerId,Long optionalSecondaryOwnerId,Long id);
     void modifyBalance(Long id,Money newBalance);
 }

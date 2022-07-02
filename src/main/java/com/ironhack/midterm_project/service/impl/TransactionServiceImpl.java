@@ -1,8 +1,6 @@
 package com.ironhack.midterm_project.service.impl;
 
 import com.ironhack.midterm_project.classes.Money;
-import com.ironhack.midterm_project.controller.dto.ThirdPartyTransactionDTO;
-import com.ironhack.midterm_project.controller.dto.TransferDTO;
 import com.ironhack.midterm_project.enums.TransactionType;
 import com.ironhack.midterm_project.model.Transaction;
 import com.ironhack.midterm_project.model.accounts.Account;
@@ -10,15 +8,12 @@ import com.ironhack.midterm_project.model.users.ThirdParty;
 import com.ironhack.midterm_project.repository.AccountRepository;
 import com.ironhack.midterm_project.repository.ThirdPartyRepository;
 import com.ironhack.midterm_project.repository.TransactionRepository;
-import com.ironhack.midterm_project.security.CustomUserDetails;
 import com.ironhack.midterm_project.service.interfaces.TransactionService;
 import com.ironhack.midterm_project.utils.PasswordEncodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
@@ -34,6 +29,8 @@ public class TransactionServiceImpl implements TransactionService {
     private ThirdPartyRepository thirdPartyRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public String transferFoundings(Long userId, Long receivingAccountId, String receivingAccountOwnerName,
                                     Money amount, Long id){
@@ -44,8 +41,11 @@ public class TransactionServiceImpl implements TransactionService {
         //Check if the receiving account data is correct
         Account receivingAccount = accountRepository.findById(receivingAccountId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiving account not found"));
-        List<String> ownersList = List.of(receivingAccount.getPrimaryOwner().getUsername(),
-                receivingAccount.getSecondaryOwner().getUsername());
+        List<String> ownersList = List.of(receivingAccount.getPrimaryOwner().getUsername());
+        if (receivingAccount.getSecondaryOwner()!=null){
+            ownersList = List.of(receivingAccount.getPrimaryOwner().getUsername(),
+                    receivingAccount.getSecondaryOwner().getUsername());
+        }
         if (!ownersList.contains(receivingAccountOwnerName)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The receptor indicated is not an owner of the " +
                     "receiving account");
@@ -73,8 +73,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public String thirdPartyRefund(String hashedKey, Long receivingAccountId,String secretKey,Money amount){
-        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
-        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
+        hashedKey = passwordEncoder.encode(hashedKey);
+        secretKey = passwordEncoder.encode(secretKey);
 
         //Check if third-party exists
         ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey).orElseThrow(() ->
@@ -101,8 +101,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public String thirdPartyDischarge(String hashedKey,Long sendingAccountId,String secretKey,Money amount){
-        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
-        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
+        hashedKey = passwordEncoder.encode(hashedKey);
+        secretKey = passwordEncoder.encode(secretKey);
 
         //Check if third-party exists
         ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey).orElseThrow(() ->

@@ -134,9 +134,9 @@ public class AccountControllerImpl implements AccountController {
         Money balance = checkingDTO.getBalance();
         String secretKey = checkingDTO.getSecretKey();
         Long primaryOwnerId = checkingDTO.getPrimaryOwnerId();
-        Optional<Long> optionalSecondaryOwnerId = checkingDTO.getSecondaryOwnerId();
+        Long secondaryOwnerId = checkingDTO.getSecondaryOwnerId();
 
-        return accountService.createChecking(balance,secretKey,primaryOwnerId,optionalSecondaryOwnerId);
+        return accountService.createChecking(balance,secretKey,primaryOwnerId,secondaryOwnerId);
     }
 
     // Create credit card account
@@ -149,7 +149,7 @@ public class AccountControllerImpl implements AccountController {
         Money creditLimit = new Money(creditCardDTO.getCreditLimitAmount(), creditCardDTO.getCreditLimitCurrency());
         BigDecimal interestRate = creditCardDTO.getInterestRate();
         Long primaryOwnerId = creditCardDTO.getPrimaryOwnerId();
-        Optional<Long> optionalSecondaryOwnerId = creditCardDTO.getSecondaryOwnerId();
+        Long optionalSecondaryOwnerId = creditCardDTO.getSecondaryOwnerId();
 
         return accountService.createCreditCard(balance,secretKey,creditLimit,interestRate,primaryOwnerId,
                 optionalSecondaryOwnerId);
@@ -166,7 +166,7 @@ public class AccountControllerImpl implements AccountController {
                 savingsDTO.getMinimumBalanceCurrency());
         BigDecimal interestRate = savingsDTO.getInterestRate();
         Long primaryOwnerId = savingsDTO.getPrimaryOwnerId();
-        Optional<Long> optionalSecondaryOwnerId = savingsDTO.getSecondaryOwnerId();
+        Long optionalSecondaryOwnerId = savingsDTO.getSecondaryOwnerId();
 
         return accountService.createSavingsAccount(balance,secretKey,minimumBalance,interestRate,primaryOwnerId,
                 optionalSecondaryOwnerId);
@@ -180,7 +180,7 @@ public class AccountControllerImpl implements AccountController {
         Money balance = checkingDTO.getBalance();
         String secretKey = checkingDTO.getSecretKey();
         Long primaryOwnerId = checkingDTO.getPrimaryOwnerId();
-        Optional<Long> optionalSecondaryOwnerId = checkingDTO.getSecondaryOwnerId();
+        Long optionalSecondaryOwnerId = checkingDTO.getSecondaryOwnerId();
 
         accountService.modifyCheckingAccount(balance,secretKey,primaryOwnerId,optionalSecondaryOwnerId,id);
     }
@@ -195,7 +195,7 @@ public class AccountControllerImpl implements AccountController {
         Money creditLimit = new Money(creditCardDTO.getCreditLimitAmount(), creditCardDTO.getCreditLimitCurrency());
         BigDecimal interestRate = creditCardDTO.getInterestRate();
         Long primaryOwnerId = creditCardDTO.getPrimaryOwnerId();
-        Optional<Long> optionalSecondaryOwnerId = creditCardDTO.getSecondaryOwnerId();
+        Long optionalSecondaryOwnerId = creditCardDTO.getSecondaryOwnerId();
 
         accountService.modifyCreditCardAccount(balance,secretKey,creditLimit,interestRate,primaryOwnerId,
                 optionalSecondaryOwnerId,id);
@@ -211,7 +211,7 @@ public class AccountControllerImpl implements AccountController {
         Money minimumBalance = new Money(savingsDTO.getMinimumBalanceAmount(), savingsDTO.getMinimumBalanceCurrency());
         BigDecimal interestRate = savingsDTO.getInterestRate();
         Long primaryOwnerId = savingsDTO.getPrimaryOwnerId();
-        Optional<Long> optionalSecondaryOwnerId = savingsDTO.getSecondaryOwnerId();
+        Long optionalSecondaryOwnerId = savingsDTO.getSecondaryOwnerId();
 
         accountService.modifySavingsAccount(balance,secretKey,minimumBalance,interestRate,primaryOwnerId,
                 optionalSecondaryOwnerId,id);

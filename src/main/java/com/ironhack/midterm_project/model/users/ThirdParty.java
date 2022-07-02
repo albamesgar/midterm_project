@@ -21,6 +21,14 @@ public class ThirdParty{
     @NotNull(message = "Name can not be null")
     private String name;
 
+    public ThirdParty() {
+    }
+
+    public ThirdParty(String hashedKey, String name) {
+        this.hashedKey = hashedKey;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

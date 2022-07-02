@@ -10,8 +10,19 @@ public class Address {
     private int postalCode;
     private String country;
 
-    // GETTERS AND SETTERS
+    //CONSTRUCTOR
+    public Address() {
+    }
 
+    public Address(String street, int homeNumber, String city, int postalCode, String country) {
+        this.street = street;
+        this.homeNumber = homeNumber;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.country = country;
+    }
+
+    // GETTERS AND SETTERS
     public String getStreet() {
         return street;
     }
@@ -50,16 +61,5 @@ public class Address {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    @Override
-    public String toString() {
-        return "Address{" +
-                "street='" + street + '\'' +
-                ", homeNumber=" + homeNumber +
-                ", city='" + city + '\'' +
-                ", postalCode=" + postalCode +
-                ", country='" + country + '\'' +
-                '}';
     }
 }

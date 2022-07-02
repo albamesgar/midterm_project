@@ -7,6 +7,15 @@ public class TransferDTO {
     private String ownerName;
     private Long accountId;
 
+    public TransferDTO() {
+    }
+
+    public TransferDTO(Money amount, String ownerName, Long accountId) {
+        this.amount = amount;
+        this.ownerName = ownerName;
+        this.accountId = accountId;
+    }
+
     public Money getAmount() {
         return amount;
     }

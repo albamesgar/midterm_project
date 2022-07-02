@@ -1,31 +1,17 @@
 package com.ironhack.midterm_project.controller.impl;
 
 import com.ironhack.midterm_project.classes.Money;
-import com.ironhack.midterm_project.controller.dto.SavingsDTO;
 import com.ironhack.midterm_project.controller.dto.ThirdPartyTransactionDTO;
 import com.ironhack.midterm_project.controller.dto.TransferDTO;
 import com.ironhack.midterm_project.controller.interfaces.TransactionController;
-import com.ironhack.midterm_project.enums.TransactionType;
-import com.ironhack.midterm_project.model.Transaction;
-import com.ironhack.midterm_project.model.accounts.Account;
-import com.ironhack.midterm_project.model.users.AccountHolder;
-import com.ironhack.midterm_project.model.users.ThirdParty;
-import com.ironhack.midterm_project.repository.AccountRepository;
-import com.ironhack.midterm_project.repository.ThirdPartyRepository;
-import com.ironhack.midterm_project.repository.TransactionRepository;
-import com.ironhack.midterm_project.repository.UserRepository;
 import com.ironhack.midterm_project.security.CustomUserDetails;
 import com.ironhack.midterm_project.service.interfaces.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 public class TransactionControllerImpl implements TransactionController {
@@ -36,7 +22,6 @@ public class TransactionControllerImpl implements TransactionController {
 
     @Autowired
     private TransactionService transactionService;
-
 
     @PostMapping("/my-accounts/{id}/transfer")
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -53,8 +38,9 @@ public class TransactionControllerImpl implements TransactionController {
     }
 
     @PostMapping("/third-party/{hashedKey}/refund")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public String thirdPartyRefund(@PathVariable String hashedKey,
-                                   @RequestBody ThirdPartyTransactionDTO thirdPartyTransactionDTO){
+                                   @RequestBody @Valid ThirdPartyTransactionDTO thirdPartyTransactionDTO){
         Long receivingAccountId = thirdPartyTransactionDTO.getAccountId();
         String secretKey = thirdPartyTransactionDTO.getAccountSecretKey();
         Money amount = thirdPartyTransactionDTO.getAmount();
@@ -63,8 +49,9 @@ public class TransactionControllerImpl implements TransactionController {
     }
 
     @PostMapping("/third-party/{hashedKey}/discharge")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public String thirdPartyDischarge(@PathVariable String hashedKey,
-                                   @RequestBody ThirdPartyTransactionDTO thirdPartyTransactionDTO){
+                                   @RequestBody @Valid ThirdPartyTransactionDTO thirdPartyTransactionDTO){
         Long sendingAccountId = thirdPartyTransactionDTO.getAccountId();
         String secretKey = thirdPartyTransactionDTO.getAccountSecretKey();
         Money amount = thirdPartyTransactionDTO.getAmount();

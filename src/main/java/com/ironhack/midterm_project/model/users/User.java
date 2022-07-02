@@ -20,7 +20,7 @@ public abstract class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @NotNull(message = "Role can not be null")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Role role;
 
     //CONSTRUCTORS

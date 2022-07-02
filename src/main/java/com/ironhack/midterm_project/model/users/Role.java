@@ -39,12 +39,4 @@ public class Role {
     public void setName(String name) {
         this.name = name;
     }
-
-    public Set<User> getUserSet() {
-        return userSet;
-    }
-
-    public void setUserSet(Set<User> userSet) {
-        this.userSet = userSet;
-    }
 }

@@ -9,6 +9,7 @@ import com.ironhack.midterm_project.model.accounts.Account;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -67,42 +68,27 @@ public class AccountHolder extends User {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
     public Address getPrimaryAddress() {
         return primaryAddress;
-    }
-
-    public void setPrimaryAddress(Address primaryAddress) {
-        this.primaryAddress = primaryAddress;
     }
 
     public Address getMailingAddress() {
         return mailingAddress;
     }
 
-    public void setMailingAddress(Address mailingAddress) {
-        this.mailingAddress = mailingAddress;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        AccountHolder that = (AccountHolder) o;
+        return dateOfBirth.equals(that.dateOfBirth) && primaryAddress.equals(that.primaryAddress);
     }
 
-    public Set<Account> getPrimaryAccountSet() {
-        return primaryAccountSet;
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), dateOfBirth, primaryAddress);
     }
-
-    public void setPrimaryAccountSet(Set<Account> primaryAccountSet) {
-        this.primaryAccountSet = primaryAccountSet;
-    }
-
-    public Set<Account> getSecondaryAccountSet() {
-        return secondaryAccountSet;
-    }
-
-    public void setSecondaryAccountSet(Set<Account> secondaryAccountSet) {
-        this.secondaryAccountSet = secondaryAccountSet;
-    }
-
 
     // access to their own account balance
     // transfer money from any of their accounts to any other account

@@ -6,6 +6,7 @@ import com.ironhack.midterm_project.model.accounts.Account;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -46,23 +47,24 @@ public abstract class User {
         return username;
     }
 
-    public void setUsername(String userName) {
-        this.username = userName;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Role getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return username.equals(user.username) && password.equals(user.password) && role.equals(user.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, password, role);
     }
 }

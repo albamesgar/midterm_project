@@ -1,5 +1,9 @@
 package com.ironhack.midterm_project.controller.impl;
 
+import com.ironhack.midterm_project.classes.Address;
+import com.ironhack.midterm_project.controller.dto.AccountHolderDTO;
+import com.ironhack.midterm_project.controller.dto.AdminDTO;
+import com.ironhack.midterm_project.controller.dto.ThirdPartyDTO;
 import com.ironhack.midterm_project.controller.interfaces.UserController;
 import com.ironhack.midterm_project.model.accounts.Account;
 import com.ironhack.midterm_project.model.users.AccountHolder;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,48 +94,71 @@ public class UserControllerImpl implements UserController {
     @PostMapping("/new/admin")
     @ResponseStatus(HttpStatus.CREATED)
     public Admin createAdmin(@AuthenticationPrincipal CustomUserDetails userDetails,
-                             @RequestBody @Valid Admin admin) {
-        return userService.createAdmin(admin);
+                             @RequestBody @Valid AdminDTO adminDTO) {
+        String username = adminDTO.getUsername();
+        String password = adminDTO.getPassword();
+        String roleName = adminDTO.getRole();
+        return userService.createAdmin(username,password,roleName);
     }
 
     //Create account holder
     @PostMapping("/new/account-holder")
     @ResponseStatus(HttpStatus.CREATED)
     public AccountHolder createAccountHolder(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                             @RequestBody @Valid AccountHolder accountHolder) {
-        return userService.createAccountHolder(accountHolder);
+                                             @RequestBody @Valid AccountHolderDTO accountHolderDTO) {
+        String username = accountHolderDTO.getUsername();
+        String password = accountHolderDTO.getPassword();
+        String roleName = accountHolderDTO.getRole();
+        Date dateOfBirth= accountHolderDTO.getDateOfBirth();
+        Address primaryAddress = accountHolderDTO.getPrimaryAddress();
+        Address mailingAddress = accountHolderDTO.getMailingAddress();
+        return userService.createAccountHolder(username,password,roleName,dateOfBirth,primaryAddress,mailingAddress);
     }
 
     //Create third-party
     @PostMapping("/new/third-party")
     @ResponseStatus(HttpStatus.CREATED)
     public ThirdParty createThirdParty(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                       @RequestBody @Valid ThirdParty thirdParty){
-        return userService.createThirdParty(thirdParty);
+                                       @RequestBody @Valid ThirdPartyDTO thirdPartyDTO){
+        String hashedKey = thirdPartyDTO.getHashedKey();
+        String name = thirdPartyDTO.getName();
+        return userService.createThirdParty(hashedKey,name);
     }
 
     //Modify admin data
     @PutMapping("/users/admins/{id}/modify-data")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyAdmin(@AuthenticationPrincipal CustomUserDetails userDetails,
-                             @PathVariable Long id,@RequestBody @Valid Admin admin) {
-        userService.modifyAdmin(id,admin);
+                             @PathVariable Long id,@RequestBody @Valid AdminDTO adminDTO) {
+        String username = adminDTO.getUsername();
+        String password = adminDTO.getPassword();
+        String roleName = adminDTO.getRole();
+        userService.modifyAdmin(id,username,password,roleName);
     }
 
     //Modify account holder data
     @PutMapping("/users/account-holders/{id}/modify-data")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyAccountHolder(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                             @PathVariable Long id,@RequestBody @Valid AccountHolder accountHolder) {
-        userService.modifyAccountHolder(id, accountHolder);
+                                             @PathVariable Long id,
+                                    @RequestBody @Valid AccountHolderDTO accountHolderDTO) {
+        String username = accountHolderDTO.getUsername();
+        String password = accountHolderDTO.getPassword();
+        String roleName = accountHolderDTO.getRole();
+        Date dateOfBirth= accountHolderDTO.getDateOfBirth();
+        Address primaryAddress = accountHolderDTO.getPrimaryAddress();
+        Address mailingAddress = accountHolderDTO.getMailingAddress();
+        userService.modifyAccountHolder(id,username,password,roleName,dateOfBirth,primaryAddress,mailingAddress);
     }
 
     //Modify third-party data
     @PutMapping("/users/third-parties/{id}/modify-data")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyThirdParty(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                       @PathVariable Long id,@RequestBody @Valid ThirdParty thirdParty){
-        userService.modifyThirdParty(id, thirdParty);
+                                       @PathVariable Long id,@RequestBody @Valid ThirdPartyDTO thirdPartyDTO){
+        String hashedKey = thirdPartyDTO.getHashedKey();
+        String name = thirdPartyDTO.getName();
+        userService.modifyThirdParty(id, hashedKey,name);
     }
 
     // Delete user by id (admin)

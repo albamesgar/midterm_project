@@ -15,9 +15,13 @@ public class Admin extends User{
         super(username, password, role);
     }
 
-    //    public Admin() {
-//        Role role =new Role();
-//        role.setName("ADMIN");
-//        this.setRole(role);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

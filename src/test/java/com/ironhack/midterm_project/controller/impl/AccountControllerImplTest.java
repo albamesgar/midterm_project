@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Currency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -634,7 +635,7 @@ class AccountControllerImplTest {
         httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
 
         CheckingDTO checkingDTO = new CheckingDTO(new Money(BigDecimal.valueOf(1500)),accountHolder2.getId(),
-                "1234");
+                accountHolder1.getId(),"1234");
         String body = objectMapper.writeValueAsString(checkingDTO);
 
         // Hago la llamada HTTP
@@ -658,7 +659,8 @@ class AccountControllerImplTest {
         httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
 
         CreditCardDTO creditCardDTO = new CreditCardDTO(new Money(BigDecimal.valueOf(1500)),accountHolder1.getId(),
-                BigDecimal.valueOf(200),"1234",BigDecimal.valueOf(0.15));
+                accountHolder2.getId(),BigDecimal.valueOf(200), Currency.getInstance("USD"),
+                "1234",BigDecimal.valueOf(0.15));
         String body = objectMapper.writeValueAsString(creditCardDTO);
 
         // Hago la llamada HTTP
@@ -682,7 +684,8 @@ class AccountControllerImplTest {
         httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
 
         SavingsDTO savingsDTO = new SavingsDTO(new Money(BigDecimal.valueOf(3000)),accountHolder1.getId(),
-                BigDecimal.valueOf(200),"1234",BigDecimal.valueOf(0.005));
+                accountHolder2.getId(),BigDecimal.valueOf(200),Currency.getInstance("USD"),
+                "1234",BigDecimal.valueOf(0.005));
         String body = objectMapper.writeValueAsString(savingsDTO);
 
         // Hago la llamada HTTP

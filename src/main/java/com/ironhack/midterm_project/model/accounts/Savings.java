@@ -63,16 +63,8 @@ public class Savings extends Account{
         return minimumBalance;
     }
 
-    public void setMinimumBalance(Money minimumBalance) {
-        this.minimumBalance = minimumBalance;
-    }
-
     public BigDecimal getInterestRate() {
         return interestRate;
-    }
-
-    public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
     }
 
     public LocalDate getLastTimeInterestApplied() {

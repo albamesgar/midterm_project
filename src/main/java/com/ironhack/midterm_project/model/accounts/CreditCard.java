@@ -63,16 +63,8 @@ public class CreditCard extends Account{
         return creditLimit;
     }
 
-    public void setCreditLimit(Money creditLimit) {
-        this.creditLimit = creditLimit;
-    }
-
     public BigDecimal getInterestRate() {
         return interestRate;
-    }
-
-    public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
     }
 
     public LocalDate getLastTimeInterestApplied() {

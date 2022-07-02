@@ -29,8 +29,6 @@ public class TransactionServiceImpl implements TransactionService {
     private ThirdPartyRepository thirdPartyRepository;
     @Autowired
     private TransactionRepository transactionRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     public String transferFoundings(Long userId, Long receivingAccountId, String receivingAccountOwnerName,
                                     Money amount, Long id){
@@ -73,8 +71,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public String thirdPartyRefund(String hashedKey, Long receivingAccountId,String secretKey,Money amount){
-        hashedKey = passwordEncoder.encode(hashedKey);
-        secretKey = passwordEncoder.encode(secretKey);
+        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
+        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
 
         //Check if third-party exists
         ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey).orElseThrow(() ->
@@ -101,8 +99,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public String thirdPartyDischarge(String hashedKey,Long sendingAccountId,String secretKey,Money amount){
-        hashedKey = passwordEncoder.encode(hashedKey);
-        secretKey = passwordEncoder.encode(secretKey);
+        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
+        secretKey = PasswordEncodeUtil.encodePassword(secretKey);
 
         //Check if third-party exists
         ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey).orElseThrow(() ->

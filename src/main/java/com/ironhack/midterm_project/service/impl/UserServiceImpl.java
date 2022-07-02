@@ -1,19 +1,17 @@
 package com.ironhack.midterm_project.service.impl;
 
-import com.ironhack.midterm_project.model.users.AccountHolder;
-import com.ironhack.midterm_project.model.users.Admin;
-import com.ironhack.midterm_project.model.users.ThirdParty;
-import com.ironhack.midterm_project.model.users.User;
-import com.ironhack.midterm_project.repository.AccountHolderRepository;
-import com.ironhack.midterm_project.repository.AdminRepository;
-import com.ironhack.midterm_project.repository.ThirdPartyRepository;
-import com.ironhack.midterm_project.repository.UserRepository;
+import com.ironhack.midterm_project.classes.Address;
+import com.ironhack.midterm_project.model.users.*;
+import com.ironhack.midterm_project.repository.*;
 import com.ironhack.midterm_project.service.interfaces.UserService;
 import com.ironhack.midterm_project.utils.PasswordEncodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.sql.Date;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,6 +23,8 @@ public class UserServiceImpl implements UserService {
     private AccountHolderRepository accountHolderRepository;
     @Autowired
     private ThirdPartyRepository thirdPartyRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     public User findUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
@@ -44,10 +44,10 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public Admin createAdmin(Admin admin) {
-        String password = admin.getPassword();
-        password = PasswordEncodeUtil.encodePassword(password);
-        admin.setPassword(password);
+    public Admin createAdmin(String username, String password, String roleName) {
+        Role role = roleRepository.findByName(roleName).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+        Admin admin = new Admin(username,password,role);
         for (Admin admin1 : adminRepository.findAll()){
             if (admin.equals(admin1)){
                 throw new ResponseStatusException(HttpStatus.IM_USED, "Admin already exists");
@@ -56,10 +56,15 @@ public class UserServiceImpl implements UserService {
         return adminRepository.save(admin);
     }
 
-    public AccountHolder createAccountHolder(AccountHolder accountHolder) {
-        String password = accountHolder.getPassword();
-        password = PasswordEncodeUtil.encodePassword(password);
-        accountHolder.setPassword(password);
+    public AccountHolder createAccountHolder(String username, String password, String roleName, Date dateOfBirth,
+                                             Address primaryAddress,Address mailingAddress) {
+        Role role = roleRepository.findByName(roleName).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+        AccountHolder accountHolder = new AccountHolder(username,password,role,dateOfBirth,primaryAddress);
+        if (mailingAddress!=null){
+            accountHolder = new AccountHolder(username,password,role,dateOfBirth,primaryAddress,
+                    mailingAddress);
+        }
         for (AccountHolder accountHolder1 : accountHolderRepository.findAll()){
             if (accountHolder.equals(accountHolder1)){
                 throw new ResponseStatusException(HttpStatus.IM_USED, "Account Holder already exists");
@@ -68,10 +73,8 @@ public class UserServiceImpl implements UserService {
         return accountHolderRepository.save(accountHolder);
     }
 
-    public ThirdParty createThirdParty(ThirdParty thirdParty){
-        String hashedKey = thirdParty.getHashedKey();
-        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
-        thirdParty.setHashedKey(hashedKey);
+    public ThirdParty createThirdParty(String hashedKey, String name){
+        ThirdParty thirdParty = new ThirdParty(hashedKey,name);
         for (ThirdParty thirdParty1 : thirdPartyRepository.findAll()){
             if (thirdParty.equals(thirdParty1)){
                 throw new ResponseStatusException(HttpStatus.IM_USED, "Third Party already exists");
@@ -80,28 +83,31 @@ public class UserServiceImpl implements UserService {
         return thirdPartyRepository.save(thirdParty);
     }
 
-    public void modifyAdmin(Long id, Admin admin) {
-        String password = admin.getPassword();
-        password = PasswordEncodeUtil.encodePassword(password);
-        admin.setPassword(password);
+    public void modifyAdmin(Long id, String username, String password, String roleName) {
+        Role role = roleRepository.findByName(roleName).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+        Admin admin = new Admin(username,password,role);
         User user = findUserById(id);
         admin.setId(user.getId());
         adminRepository.save(admin);
     }
 
-    public void modifyAccountHolder(Long id,AccountHolder accountHolder) {
-        String password = accountHolder.getPassword();
-        password = PasswordEncodeUtil.encodePassword(password);
-        accountHolder.setPassword(password);
+    public void modifyAccountHolder(Long id,String username, String password, String roleName, Date dateOfBirth,
+                                    Address primaryAddress,Address mailingAddress) {
+        Role role = roleRepository.findByName(roleName).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+        AccountHolder accountHolder = new AccountHolder(username,password,role,dateOfBirth,primaryAddress);
+        if (mailingAddress!=null){
+            accountHolder = new AccountHolder(username,password,role,dateOfBirth,primaryAddress,
+                    mailingAddress);
+        }
         User user = findUserById(id);
         accountHolder.setId(user.getId());
         accountHolderRepository.save(accountHolder);
     }
 
-    public void modifyThirdParty(Long id,ThirdParty thirdParty){
-        String hashedKey = thirdParty.getHashedKey();
-        hashedKey = PasswordEncodeUtil.encodePassword(hashedKey);
-        thirdParty.setHashedKey(hashedKey);
+    public void modifyThirdParty(Long id,String hashedKey, String name){
+        ThirdParty thirdParty = new ThirdParty(hashedKey,name);
         ThirdParty thirdParty1 = findThirdPartyById(id);
         thirdParty.setId(thirdParty1.getId());
         thirdPartyRepository.save(thirdParty);

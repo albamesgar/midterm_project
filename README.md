@@ -42,7 +42,7 @@ All accounts have the following attributes:
 - secret key
 - creation date
 - status (ACTIVE or FROZEN)
-- account type (CHECKING, STUDENT_CHECKING, CREDIT_CARD, SAVINGS)
+- account type (CHECKING, STUDENT_CHECKING, CREDIT_CARD or SAVINGS)
 
 Student Checking accounts don't have any other attribute.
 
@@ -177,3 +177,63 @@ Route Type | Route | Input Required | Action Done
 --- | --- | --- |--- 
 POST | /third-party/{hashedKey}/refund | ThirdPartyTransactionDTO | Do a refund to an account
 POST | /third-party/{hashedKey}/discharge | ThirdPartyTransactionDTO | Do a discharge to an account
+
+### DTO Templates
+Please note: In all DTOs, any reference to secondary owner is optional, and can be removed if not required. The same happens with the mailing address.
+
+#### Accounts
+- CheckingDTO
+- 
+```sh
+{"balance":{"amount":NUMBER, "currency":CURRENCY}, "primaryOwnerId":USERID, "secondaryOwnerId":USERID, "secretKey":STRING}
+```
+
+- CreditCardDTO (creditLimitAmount, creditLimitCurrency and interestRate are optional)
+
+```sh
+{"balance":{"amount":NUMBER, "currency":CURRENCY}, "primaryOwnerId":USERID, "secondaryOwnerId":USERID, "secretKey":STRING, "creditLimitAmount":NUMBER, "creditLimitCurrency":CURRENCY, "interestRate":DECIMAL}
+```
+
+- SavingsDTO (minimumBalanceAmount, minimumBalanceCurrency and interestRate are optional)
+
+```sh
+{"balance":{"amount":NUMBER, "currency":CURRENCY}, "primaryOwnerId":USERID, "secondaryOwnerId":USERID, "secretKey":STRING, "minimumBalanceAmount":NUMBER, "minimumBalanceCurrency":CURRENCY, "interestRate":DECIMAL}
+```
+
+- BalanceDTO
+
+```sh
+{"newBalance":{"amount":NUMBER, "currency":CURRENCY}}
+```
+
+#### Users
+- AdminDTO
+
+```sh
+{"username":STRING, "password":STRING, "role":STRING}
+```
+
+- AccountHolderDTO
+
+```sh
+{"username":STRING, "password":STRING, "role":STRING, "dateOfBirth":"yyyy-mm-dd", "primaryAddress":{"street":STRING, "homeNumber":NUMBER, "city":STRING, "postalCode":NUMBER, "country":STRING}, "mailingAddress":{"street":STRING, "homeNumber":NUMBER, "city":STRING, "postalCode":NUMBER, "country":STRING}}
+```
+
+- ThirdPartyDTO
+
+```sh
+{"hashedKey":STRING, "name":STRING}
+```
+
+#### Transactions
+- TransferDTO
+
+```sh
+{"amount":{"amount":NUMBER, "currency":CURRENCY}, "ownerName":STRING, "accountId":NUMBER}
+```
+
+- ThirdPartyTransactionDTO
+
+```sh
+{"amount":{"amount":NUMBER, "currency":CURRENCY},  "accountId":NUMBER, "accountSecretKey":STRING}
+```

@@ -1,7 +1,6 @@
 package com.ironhack.midterm_project.service.interfaces;
 
 import com.ironhack.midterm_project.classes.Money;
-import com.ironhack.midterm_project.controller.dto.BalanceDTO;
 import com.ironhack.midterm_project.model.accounts.Account;
 import com.ironhack.midterm_project.model.accounts.Checking;
 import com.ironhack.midterm_project.model.accounts.CreditCard;
@@ -9,7 +8,6 @@ import com.ironhack.midterm_project.model.accounts.Savings;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface AccountService {
     List<Account> findAllAccounts();

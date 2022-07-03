@@ -1,11 +1,10 @@
 package com.ironhack.midterm_project.controller.impl;
 
 import com.ironhack.midterm_project.classes.Address;
-import com.ironhack.midterm_project.controller.dto.AccountHolderDTO;
-import com.ironhack.midterm_project.controller.dto.AdminDTO;
-import com.ironhack.midterm_project.controller.dto.ThirdPartyDTO;
+import com.ironhack.midterm_project.controller.dto.users.AccountHolderDTO;
+import com.ironhack.midterm_project.controller.dto.users.AdminDTO;
+import com.ironhack.midterm_project.controller.dto.users.ThirdPartyDTO;
 import com.ironhack.midterm_project.controller.interfaces.UserController;
-import com.ironhack.midterm_project.model.accounts.Account;
 import com.ironhack.midterm_project.model.users.AccountHolder;
 import com.ironhack.midterm_project.model.users.Admin;
 import com.ironhack.midterm_project.model.users.ThirdParty;
@@ -20,12 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class UserControllerImpl implements UserController {
@@ -90,7 +87,7 @@ public class UserControllerImpl implements UserController {
         return userService.findMyUser(userId);
     }
 
-    //Create admin
+    //Create admin (admin)
     @PostMapping("/new/admin")
     @ResponseStatus(HttpStatus.CREATED)
     public Admin createAdmin(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -101,7 +98,7 @@ public class UserControllerImpl implements UserController {
         return userService.createAdmin(username,password,roleName);
     }
 
-    //Create account holder
+    //Create account holder (admin)
     @PostMapping("/new/account-holder")
     @ResponseStatus(HttpStatus.CREATED)
     public AccountHolder createAccountHolder(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -115,7 +112,7 @@ public class UserControllerImpl implements UserController {
         return userService.createAccountHolder(username,password,roleName,dateOfBirth,primaryAddress,mailingAddress);
     }
 
-    //Create third-party
+    //Create third-party (admin)
     @PostMapping("/new/third-party")
     @ResponseStatus(HttpStatus.CREATED)
     public ThirdParty createThirdParty(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -125,7 +122,7 @@ public class UserControllerImpl implements UserController {
         return userService.createThirdParty(hashedKey,name);
     }
 
-    //Modify admin data
+    //Modify admin data (admin)
     @PutMapping("/users/admins/{id}/modify-data")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyAdmin(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -136,7 +133,7 @@ public class UserControllerImpl implements UserController {
         userService.modifyAdmin(id,username,password,roleName);
     }
 
-    //Modify account holder data
+    //Modify account holder data (admin)
     @PutMapping("/users/account-holders/{id}/modify-data")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyAccountHolder(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -151,7 +148,7 @@ public class UserControllerImpl implements UserController {
         userService.modifyAccountHolder(id,username,password,roleName,dateOfBirth,primaryAddress,mailingAddress);
     }
 
-    //Modify third-party data
+    //Modify third-party data (admin)
     @PutMapping("/users/third-parties/{id}/modify-data")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyThirdParty(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -169,7 +166,7 @@ public class UserControllerImpl implements UserController {
         userService.deleteUser(id);
     }
 
-    // Delete user by id (admin)
+    // Delete third-party by id (admin)
     @DeleteMapping("/delete/third-party/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteThirdParty(@AuthenticationPrincipal CustomUserDetails userDetails,

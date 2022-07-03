@@ -4,14 +4,15 @@ import com.ironhack.midterm_project.classes.Address;
 import com.ironhack.midterm_project.model.users.*;
 import com.ironhack.midterm_project.repository.*;
 import com.ironhack.midterm_project.service.interfaces.UserService;
-import com.ironhack.midterm_project.utils.PasswordEncodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private ThirdPartyRepository thirdPartyRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User findUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
@@ -45,6 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public Admin createAdmin(String username, String password, String roleName) {
+        password = passwordEncoder.encode(password);
         Role role = roleRepository.findByName(roleName).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
         Admin admin = new Admin(username,password,role);
@@ -58,6 +62,7 @@ public class UserServiceImpl implements UserService {
 
     public AccountHolder createAccountHolder(String username, String password, String roleName, Date dateOfBirth,
                                              Address primaryAddress,Address mailingAddress) {
+        password = passwordEncoder.encode(password);
         Role role = roleRepository.findByName(roleName).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
         AccountHolder accountHolder = new AccountHolder(username,password,role,dateOfBirth,primaryAddress);
@@ -74,6 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public ThirdParty createThirdParty(String hashedKey, String name){
+        hashedKey = UUID.nameUUIDFromBytes(hashedKey.getBytes()).toString();
         ThirdParty thirdParty = new ThirdParty(hashedKey,name);
         for (ThirdParty thirdParty1 : thirdPartyRepository.findAll()){
             if (thirdParty.equals(thirdParty1)){
@@ -84,6 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void modifyAdmin(Long id, String username, String password, String roleName) {
+        password = passwordEncoder.encode(password);
         Role role = roleRepository.findByName(roleName).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
         Admin admin = new Admin(username,password,role);
@@ -94,6 +101,7 @@ public class UserServiceImpl implements UserService {
 
     public void modifyAccountHolder(Long id,String username, String password, String roleName, Date dateOfBirth,
                                     Address primaryAddress,Address mailingAddress) {
+        password = passwordEncoder.encode(password);
         Role role = roleRepository.findByName(roleName).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
         AccountHolder accountHolder = new AccountHolder(username,password,role,dateOfBirth,primaryAddress);
@@ -107,6 +115,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void modifyThirdParty(Long id,String hashedKey, String name){
+        hashedKey = UUID.nameUUIDFromBytes(hashedKey.getBytes()).toString();
         ThirdParty thirdParty = new ThirdParty(hashedKey,name);
         ThirdParty thirdParty1 = findThirdPartyById(id);
         thirdParty.setId(thirdParty1.getId());

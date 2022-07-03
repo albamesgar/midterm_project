@@ -1,4 +1,4 @@
-package com.ironhack.midterm_project.controller.dto;
+package com.ironhack.midterm_project.controller.dto.accounts;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Money;

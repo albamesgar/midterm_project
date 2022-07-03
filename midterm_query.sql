@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `account` (
 	`account_type` VARCHAR(255),
 	`balance_amount` DECIMAL(19,2),
 	`balance_currency` VARCHAR(255),
-	`penalty_fee_amount` DECIMAL(19,2),
+	`penalty_fee_amount` DECIMAL(19,2) DEFAULT 40.00,
 	`penalty_fee_currency` VARCHAR(255),
 	`secret_key` VARCHAR(255),
 	`primary_owner_id` BIGINT NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
 );
 
 CREATE TABLE IF NOT EXISTS `student_checking` (
-	`creation_date` DATETIME(6),
+	`creation_date` DATE,
 	`status` VARCHAR(255),
 	`id` BIGINT NOT NULL,
 	PRIMARY KEY (`id`),
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `student_checking` (
 );
 
 CREATE TABLE IF NOT EXISTS `checking` (
-	`creation_date` DATETIME(6),
+	`creation_date` DATE,
 	`status` VARCHAR(255),
 	`minimum_balance_amount` DECIMAL(19,2),
 	`minimum_balance_currency` VARCHAR(255),
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `credit_card` (
 );
 
 CREATE TABLE IF NOT EXISTS `savings` (
-	`creation_date` DATETIME(6),
+	`creation_date` DATE,
 	`interest_rate` DECIMAL(19,2),
 	`minimum_balance_amount` DECIMAL(19,2),
 	`minimum_balance_currency` VARCHAR(255),
@@ -160,11 +160,11 @@ INSERT INTO account_holder (id,`date_of_birth`,
     `primary_address_country`) VALUES
     (3,"1997-03-29","canelones",25,"badalona",08917,"spain");
     
-INSERT INTO account (`account_type`,
+INSERT INTO account (
 	`balance_amount`,
 	`secret_key`,
 	`primary_owner_id`) VALUES 
-    ("CREDIT_CARD", 800.00, "$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 3);
+    (800.00, "$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 3);
     
 INSERT INTO `credit_card` (
 	`interest_rate`,

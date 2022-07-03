@@ -4,7 +4,6 @@ USE midterm;
 
 DROP SCHEMA IF EXISTS midterm_test;
 CREATE SCHEMA midterm_test;
--- USE midterm_test;
 
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS credit_card;
@@ -29,7 +28,8 @@ CREATE TABLE user(
     username VARCHAR(255),
     password VARCHAR(255),
     role_id BIGINT,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (role_id) REFERENCES role(id)
 );
 
 CREATE TABLE account_holder(
@@ -128,43 +128,15 @@ CREATE TABLE transaction(
     PRIMARY KEY (id),
     FOREIGN KEY (sending_account_id) REFERENCES account(id),
     FOREIGN KEY (receiving_account_id) REFERENCES account(id),
-    FOREIGN KEY (third_party_id) REFERENCES account(id)
+    FOREIGN KEY (third_party_id) REFERENCES third_party(id)
 );
 
 INSERT INTO role (name) VALUES
 ("ADMIN"),
 ("ACCOUNT_HOLDER");
--- SELECT * FROM role;
-
-INSERT INTO third_party (name,hashed_key) VALUES
-("Lia","1414");
--- SELECT * FROM third_party;
 
 INSERT INTO user(username, password, role_id) VALUES
-("Pepa","$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 1),
-("Lua","$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 1),
-("Alba","$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 2);
+("Lua","$2a$10$IPv2SNSsFeueY67KnCl/YOBK2NVEgVm/qvF0Ou2nF8sovt30ydV8i", 1);
 
 INSERT INTO admin(id) VALUES
-(1),
-(2);
--- SELECT * FROM admin;
-
-INSERT INTO account_holder (id,`date_of_birth`,
-    `primary_address_street`,
-    `primary_address_home_number`,
-    `primary_address_city`,
-    `primary_address_postal_code`,
-    `primary_address_country`) VALUES
-    (3,"1997-03-29","canelones",25,"badalona",8917,"spain");
-    
-/*INSERT INTO account (
-	`balance_amount`,
-	`secret_key`,
-	`primary_owner_id`, `creation_date`) VALUES 
-    (800.00, "$2a$10$1aEP.6ZN/1kn7I94Zmm07OJSI2HuN1pyB5A80pEy47FPMOW7RumY.", 3, "2022-06-30");
-    
-INSERT INTO `credit_card` (
-	`interest_rate`,
-	`id`) VALUES
-    ( 0.2, 1);*/
+(1);

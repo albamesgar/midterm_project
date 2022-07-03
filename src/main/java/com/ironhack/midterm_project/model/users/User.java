@@ -60,11 +60,11 @@ public abstract class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return username.equals(user.username) && password.equals(user.password) && role.equals(user.role);
+        return username.equals(user.username) && role.equals(user.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, password, role);
+        return Objects.hash(username, role);
     }
 }

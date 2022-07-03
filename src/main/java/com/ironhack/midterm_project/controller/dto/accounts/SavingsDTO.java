@@ -1,4 +1,4 @@
-package com.ironhack.midterm_project.controller.dto;
+package com.ironhack.midterm_project.controller.dto.accounts;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Money;
@@ -22,18 +22,19 @@ public class SavingsDTO {
     @NotNull(message = "Secret key can not be null")
     private String secretKey;
 
-//    private MinimumBalanceDTO minimumBalance = new MinimumBalanceDTO(); //default 1000, min 100 when instantiated
     @DecimalMin(value = "100", message = "The minimum balance can not be lower than 100")
+    @DecimalMax(value = "1000", message = "The minimum balance can not be higher than 1000")
     private BigDecimal minimumBalanceAmount = BigDecimal.valueOf(1000);
     private Currency minimumBalanceCurrency = Currency.getInstance("USD");
 
     @DecimalMax(value = "0.5", message = "The interest rate can not be lower than 0.5")
-    private BigDecimal interestRate = new BigDecimal("0.0025"); //Default 0.0025, max 0.5
+    private BigDecimal interestRate = new BigDecimal("0.0025");
 
     //CONSTRUCTORS
     public SavingsDTO() {
     }
 
+    //Primary and secondary Owners
     public SavingsDTO(Money balance, Long primaryOwnerId, Long secondaryOwnerId, BigDecimal minimumBalanceAmount,
                       Currency minimumBalanceCurrency,String secretKey,BigDecimal interestRate) {
         this.balance = balance;
@@ -90,6 +91,7 @@ public class SavingsDTO {
         this.secretKey = secretKey;
     }
 
+    //Only primary owner
     public SavingsDTO(Money balance, Long primaryOwnerId, BigDecimal minimumBalanceAmount,
                       Currency minimumBalanceCurrency, String secretKey, BigDecimal interestRate) {
         this.balance = balance;

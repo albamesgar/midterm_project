@@ -1,23 +1,28 @@
-package com.ironhack.midterm_project.controller.dto;
+package com.ironhack.midterm_project.controller.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Address;
 import com.ironhack.midterm_project.model.users.Role;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 
 public class AccountHolderDTO {
+    @NotNull(message = "username can not be null")
     private String username;
     @NotNull(message = "password can not be null")
     private String password;
     @NotNull(message = "Role can not be null")
     private String role;
+    @NotNull(message = "The date of birth can not be null")
     private Date dateOfBirth;
+    @NotNull(message = "Primary Address can not be null")
     private Address primaryAddress;
     private Address mailingAddress = null;
 
+    //CONSTRUCTORS
     public AccountHolderDTO() {
     }
 
@@ -39,6 +44,7 @@ public class AccountHolderDTO {
         this.mailingAddress = mailingAddress;
     }
 
+    //GETTERS AND SETTERS
     public String getUsername() {
         return username;
     }

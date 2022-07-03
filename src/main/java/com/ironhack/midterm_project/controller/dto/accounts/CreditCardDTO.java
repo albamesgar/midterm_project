@@ -1,4 +1,4 @@
-package com.ironhack.midterm_project.controller.dto;
+package com.ironhack.midterm_project.controller.dto.accounts;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Money;
@@ -23,16 +23,19 @@ public class CreditCardDTO {
     private String secretKey;
 
     @DecimalMax(value = "100000", message = "The credit limit can not be higher than 100000")
+    @DecimalMin(value = "100", message = "The credit limit can not be lower than 100")
     private BigDecimal creditLimitAmount = BigDecimal.valueOf(100);
     private Currency creditLimitCurrency = Currency.getInstance("USD");
     @DecimalMin(value = "0.1", message = "The interest rate can not be lower than 0.1")
-    private BigDecimal interestRate = new BigDecimal("0.2"); //default 0.2, min 0.1 when instantiated
+    @DecimalMax(value = "0.2", message = "The interest rate can not be higher than 0.2")
+    private BigDecimal interestRate = new BigDecimal("0.2");
 
     //CONSTRUCTORS
 
     public CreditCardDTO() {
     }
 
+    //Primary and seconday owners
     public CreditCardDTO(Money balance, Long primaryOwnerId, Long secondaryOwnerId, BigDecimal creditLimitAmount,
                          Currency creditLimitCurrency, String secretKey,BigDecimal interestRate) {
         this.balance = balance;
@@ -49,25 +52,6 @@ public class CreditCardDTO {
         this.balance = balance;
         this.primaryOwnerId = primaryOwnerId;
         this.secondaryOwnerId = secondaryOwnerId;
-        this.secretKey = secretKey;
-        this.creditLimitAmount = creditLimitAmount;
-        this.interestRate = interestRate;
-    }
-
-    public CreditCardDTO(Money balance, Long primaryOwnerId, BigDecimal creditLimitAmount,
-                         Currency creditLimitCurrency, String secretKey,BigDecimal interestRate) {
-        this.balance = balance;
-        this.primaryOwnerId = primaryOwnerId;
-        this.secretKey = secretKey;
-        this.creditLimitAmount = creditLimitAmount;
-        this.creditLimitCurrency = creditLimitCurrency;
-        this.interestRate = interestRate;
-    }
-
-    public CreditCardDTO(Money balance, Long primaryOwnerId,BigDecimal creditLimitAmount,
-                         String secretKey,BigDecimal interestRate) {
-        this.balance = balance;
-        this.primaryOwnerId = primaryOwnerId;
         this.secretKey = secretKey;
         this.creditLimitAmount = creditLimitAmount;
         this.interestRate = interestRate;
@@ -106,6 +90,26 @@ public class CreditCardDTO {
         this.primaryOwnerId = primaryOwnerId;
         this.secondaryOwnerId = secondaryOwnerId;
         this.secretKey = secretKey;
+    }
+
+    //Only primary owner
+    public CreditCardDTO(Money balance, Long primaryOwnerId, BigDecimal creditLimitAmount,
+                         Currency creditLimitCurrency, String secretKey,BigDecimal interestRate) {
+        this.balance = balance;
+        this.primaryOwnerId = primaryOwnerId;
+        this.secretKey = secretKey;
+        this.creditLimitAmount = creditLimitAmount;
+        this.creditLimitCurrency = creditLimitCurrency;
+        this.interestRate = interestRate;
+    }
+
+    public CreditCardDTO(Money balance, Long primaryOwnerId,BigDecimal creditLimitAmount,
+                         String secretKey,BigDecimal interestRate) {
+        this.balance = balance;
+        this.primaryOwnerId = primaryOwnerId;
+        this.secretKey = secretKey;
+        this.creditLimitAmount = creditLimitAmount;
+        this.interestRate = interestRate;
     }
 
     public CreditCardDTO(Money balance, Long primaryOwnerId, BigDecimal creditLimitAmount,

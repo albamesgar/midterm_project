@@ -58,9 +58,9 @@ public abstract class Account {
     protected AccountType accountType;
 
     @OneToMany(mappedBy = "sendingAccount")
-    private Set<Transaction> transactionsDone;
+    private Set<Transaction> transactionsDone = new HashSet<>();
     @OneToMany(mappedBy = "receivingAccount")
-    private Set<Transaction> transactionsReceived;
+    private Set<Transaction> transactionsReceived = new HashSet<>();
 
     // CONSTRUCTORS
     public Account() {

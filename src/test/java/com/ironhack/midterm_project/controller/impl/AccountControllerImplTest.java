@@ -3,10 +3,10 @@ package com.ironhack.midterm_project.controller.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.midterm_project.classes.Address;
 import com.ironhack.midterm_project.classes.Money;
-import com.ironhack.midterm_project.controller.dto.BalanceDTO;
-import com.ironhack.midterm_project.controller.dto.CheckingDTO;
-import com.ironhack.midterm_project.controller.dto.CreditCardDTO;
-import com.ironhack.midterm_project.controller.dto.SavingsDTO;
+import com.ironhack.midterm_project.controller.dto.accounts.BalanceDTO;
+import com.ironhack.midterm_project.controller.dto.accounts.CheckingDTO;
+import com.ironhack.midterm_project.controller.dto.accounts.CreditCardDTO;
+import com.ironhack.midterm_project.controller.dto.accounts.SavingsDTO;
 import com.ironhack.midterm_project.model.accounts.Checking;
 import com.ironhack.midterm_project.model.accounts.CreditCard;
 import com.ironhack.midterm_project.model.accounts.Savings;
@@ -17,7 +17,6 @@ import com.ironhack.midterm_project.model.users.Role;
 import com.ironhack.midterm_project.repository.AccountRepository;
 import com.ironhack.midterm_project.repository.RoleRepository;
 import com.ironhack.midterm_project.repository.UserRepository;
-import com.ironhack.midterm_project.service.interfaces.AccountService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +34,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -73,21 +73,21 @@ class AccountControllerImplTest {
         accountHolderRole = new Role("ACCOUNT_HOLDER");
         admin = new Admin("Alba", passwordEncoder.encode("1234"), adminRole);
         address1 = new Address("Rambla", 2, "Barcelona", 17, "Spain");
-        accountHolder1 = new AccountHolder("Lia", passwordEncoder.encode("1234"), accountHolderRole,
-                Date.valueOf("2002-12-15"),address1);
+        accountHolder1 = new AccountHolder("Lia",passwordEncoder.encode("1234"),
+                accountHolderRole,Date.valueOf("2002-12-15"),address1);
         address2 = new Address("Salvador", 10,"La Habana",
                 25,"Cuba");
-        accountHolder2 = new AccountHolder("Fran", passwordEncoder.encode("1234"), accountHolderRole,
-                Date.valueOf("1985-06-12"), address2,address2);
+        accountHolder2 = new AccountHolder("Fran", passwordEncoder.encode("1234"),
+                accountHolderRole,Date.valueOf("1985-06-12"), address2,address2);
         checking = new Checking(new Money(BigDecimal.valueOf(500)),accountHolder2,
-                passwordEncoder.encode("1234"),LocalDate.of(2022,6,1));
+                UUID.nameUUIDFromBytes(("1234").getBytes()).toString(), LocalDate.of(2022,6,1));
         studentChecking = new StudentChecking(new Money(BigDecimal.valueOf(500)),accountHolder1,accountHolder2,
-                passwordEncoder.encode("1234"),LocalDate.of(2022,7,1));
+                UUID.nameUUIDFromBytes(("1234").getBytes()).toString(),LocalDate.of(2022,7,1));
         creditCard = new CreditCard(new Money(BigDecimal.valueOf(1000)),accountHolder1,
-                passwordEncoder.encode("1234"),new Money(BigDecimal.valueOf(200)), BigDecimal.valueOf(0.2),
-                LocalDate.of(2022,7,1));
+                UUID.nameUUIDFromBytes(("1234").getBytes()).toString(),new Money(BigDecimal.valueOf(200)),
+                BigDecimal.valueOf(0.2),LocalDate.of(2022,7,1));
         savings = new Savings(new Money(BigDecimal.valueOf(1500)),accountHolder1,accountHolder2,
-                passwordEncoder.encode("1234"), new Money(BigDecimal.valueOf(150)),
+                UUID.nameUUIDFromBytes(("1234").getBytes()).toString(), new Money(BigDecimal.valueOf(150)),
                 BigDecimal.valueOf(0.0025),LocalDate.of(2021,6,1));
 
         roleRepository.saveAll(List.of(adminRole,accountHolderRole));
@@ -441,12 +441,66 @@ class AccountControllerImplTest {
     }
 
     @Test
+    void createCreditCard_DefaultValuesSecondOwner() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
+
+        CreditCardDTO creditCardDTO = new CreditCardDTO(new Money(BigDecimal.valueOf(1500)),accountHolder1.getId(),
+                accountHolder2.getId(),"1234");
+        String body = objectMapper.writeValueAsString(creditCardDTO);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/new/credit-card").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // Compruebo el formato de la respuesta
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1500"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Lia"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("CREDIT_CARD"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("0.2")); //default interestRate
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("100")); //default creditLimit
+        // Compruebo que se haya guardado en la base de datos
+        assertTrue(accountRepository.count()==5);
+    }
+
+    @Test
     void createCreditCard_CreditLimit() throws Exception {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
 
         CreditCardDTO creditCardDTO = new CreditCardDTO(new Money(BigDecimal.valueOf(1500)), accountHolder1.getId(),
                 BigDecimal.valueOf(200),"1234");
+        String body = objectMapper.writeValueAsString(creditCardDTO);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/new/credit-card").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // Compruebo el formato de la respuesta
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1500"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Lia"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("CREDIT_CARD"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("0.2")); //default interestRate
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("200"));
+        // Compruebo que se haya guardado en la base de datos
+        assertTrue(accountRepository.count()==5);
+    }
+
+    @Test
+    void createCreditCard_CreditLimitSecondOwner() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
+
+        CreditCardDTO creditCardDTO = new CreditCardDTO(new Money(BigDecimal.valueOf(1500)), accountHolder1.getId(),
+                accountHolder2.getId(),BigDecimal.valueOf(200),"1234");
         String body = objectMapper.writeValueAsString(creditCardDTO);
 
         // Hago la llamada HTTP
@@ -495,12 +549,66 @@ class AccountControllerImplTest {
     }
 
     @Test
+    void createCreditCard_InterestRateSecondOwner() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
+
+        CreditCardDTO creditCardDTO = new CreditCardDTO(new Money(BigDecimal.valueOf(1500)), accountHolder1.getId(),
+                accountHolder2.getId(),"1234", BigDecimal.valueOf(0.15));
+        String body = objectMapper.writeValueAsString(creditCardDTO);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/new/credit-card").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // Compruebo el formato de la respuesta
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1500"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Lia"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("CREDIT_CARD"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("0.15"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("100")); //default
+        // Compruebo que se haya guardado en la base de datos
+        assertTrue(accountRepository.count()==5);
+    }
+
+    @Test
     void createCreditCard_CreditLimitInterestRate() throws Exception {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
 
         CreditCardDTO creditCardDTO = new CreditCardDTO(new Money(BigDecimal.valueOf(1500)), accountHolder1.getId(),
                 BigDecimal.valueOf(200),"1234",BigDecimal.valueOf(0.15));
+        String body = objectMapper.writeValueAsString(creditCardDTO);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/new/credit-card").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // Compruebo el formato de la respuesta
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1500"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Lia"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("CREDIT_CARD"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("0.15"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("200"));
+        // Compruebo que se haya guardado en la base de datos
+        assertTrue(accountRepository.count()==5);
+    }
+
+    @Test
+    void createCreditCard_CreditLimitInterestRateSecondOwner() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
+
+        CreditCardDTO creditCardDTO = new CreditCardDTO(new Money(BigDecimal.valueOf(1500)), accountHolder1.getId(),
+                accountHolder2.getId(),BigDecimal.valueOf(200),"1234",BigDecimal.valueOf(0.15));
         String body = objectMapper.writeValueAsString(creditCardDTO);
 
         // Hago la llamada HTTP
@@ -549,12 +657,66 @@ class AccountControllerImplTest {
     }
 
     @Test
+    void createSavingsAccount_DefaultValuesSecondOwner() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
+
+        SavingsDTO savingsDTO = new SavingsDTO(new Money(BigDecimal.valueOf(1500)), accountHolder1.getId(),
+                accountHolder2.getId(),"1234");
+        String body = objectMapper.writeValueAsString(savingsDTO);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/new/savings").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // Compruebo el formato de la respuesta
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1500"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Lia"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("SAVINGS"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("0.0025")); //default interestRate
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1000")); //default minimumBalance
+        // Compruebo que se haya guardado en la base de datos
+        assertTrue(accountRepository.count()==5);
+    }
+
+    @Test
     void createSavingsAccount_MinimumBalance() throws Exception {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
 
         SavingsDTO savingsDTO = new SavingsDTO(new Money(BigDecimal.valueOf(1500)), accountHolder1.getId(),
                 BigDecimal.valueOf(200),"1234");
+        String body = objectMapper.writeValueAsString(savingsDTO);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/new/savings").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // Compruebo el formato de la respuesta
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1500"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Lia"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("SAVINGS"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("0.0025")); //default interestRate
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("200"));
+        // Compruebo que se haya guardado en la base de datos
+        assertTrue(accountRepository.count()==5);
+    }
+
+    @Test
+    void createSavingsAccount_MinimumBalanceSecondOwner() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
+
+        SavingsDTO savingsDTO = new SavingsDTO(new Money(BigDecimal.valueOf(1500)), accountHolder1.getId(),
+                accountHolder2.getId(),BigDecimal.valueOf(200),"1234");
         String body = objectMapper.writeValueAsString(savingsDTO);
 
         // Hago la llamada HTTP
@@ -603,12 +765,66 @@ class AccountControllerImplTest {
     }
 
     @Test
+    void createSavingsAccount_InterestRateSecondOwner() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
+
+        SavingsDTO savingsDTO = new SavingsDTO(new Money(BigDecimal.valueOf(1500)),accountHolder1.getId(),
+                accountHolder2.getId(),"1234", BigDecimal.valueOf(0.005));
+        String body = objectMapper.writeValueAsString(savingsDTO);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/new/savings").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // Compruebo el formato de la respuesta
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1500"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Lia"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("SAVINGS"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("0.005"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1000")); //default minimumBalance
+        // Compruebo que se haya guardado en la base de datos
+        assertTrue(accountRepository.count()==5);
+    }
+
+    @Test
     void createSavingsAccount_InterestRateMinimumBalance() throws Exception {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
 
         SavingsDTO savingsDTO = new SavingsDTO(new Money(BigDecimal.valueOf(1500)),accountHolder1.getId(),
                 BigDecimal.valueOf(200),"1234",BigDecimal.valueOf(0.005));
+        String body = objectMapper.writeValueAsString(savingsDTO);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/new/savings").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // Compruebo el formato de la respuesta
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1500"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Lia"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("SAVINGS"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("0.005"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("200"));
+        // Compruebo que se haya guardado en la base de datos
+        assertTrue(accountRepository.count()==5);
+    }
+
+    @Test
+    void createSavingsAccount_InterestRateMinimumBalanceSecondOwner() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic QWxiYToxMjM0"); //username: Alba, password: 1234
+
+        SavingsDTO savingsDTO = new SavingsDTO(new Money(BigDecimal.valueOf(1500)),accountHolder1.getId(),
+                accountHolder2.getId(),BigDecimal.valueOf(200),"1234",BigDecimal.valueOf(0.005));
         String body = objectMapper.writeValueAsString(savingsDTO);
 
         // Hago la llamada HTTP

@@ -1,8 +1,8 @@
 package com.ironhack.midterm_project.controller.impl;
 
 import com.ironhack.midterm_project.classes.Money;
-import com.ironhack.midterm_project.controller.dto.ThirdPartyTransactionDTO;
-import com.ironhack.midterm_project.controller.dto.TransferDTO;
+import com.ironhack.midterm_project.controller.dto.transactions.ThirdPartyTransactionDTO;
+import com.ironhack.midterm_project.controller.dto.transactions.TransferDTO;
 import com.ironhack.midterm_project.controller.interfaces.TransactionController;
 import com.ironhack.midterm_project.security.CustomUserDetails;
 import com.ironhack.midterm_project.service.interfaces.TransactionService;
@@ -15,14 +15,10 @@ import javax.validation.Valid;
 
 @RestController
 public class TransactionControllerImpl implements TransactionController {
-    // See my transactions (account holder) -> GET
-    // See all transactions (admin) -> GET ?????
-    // Do third-party transaction (third-party) -> POST
-    // Do account transaction (account holder) -> POST
-
     @Autowired
     private TransactionService transactionService;
 
+    //Do a transfer from account (account-holder)
     @PostMapping("/my-accounts/{id}/transfer")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String transferFoundings(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -37,6 +33,7 @@ public class TransactionControllerImpl implements TransactionController {
                  amount,id);
     }
 
+    //Do a refund to an account (anyone)
     @PostMapping("/third-party/{hashedKey}/refund")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String thirdPartyRefund(@PathVariable String hashedKey,
@@ -48,6 +45,7 @@ public class TransactionControllerImpl implements TransactionController {
         return transactionService.thirdPartyRefund(hashedKey,receivingAccountId,secretKey,amount);
     }
 
+    //Do a discharge to an account (anyone)
     @PostMapping("/third-party/{hashedKey}/discharge")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String thirdPartyDischarge(@PathVariable String hashedKey,

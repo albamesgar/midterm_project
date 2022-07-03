@@ -1,4 +1,4 @@
-package com.ironhack.midterm_project.controller.dto;
+package com.ironhack.midterm_project.controller.dto.transactions;
 
 import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.enums.TransactionType;
@@ -8,6 +8,7 @@ public class ThirdPartyTransactionDTO {
     Long accountId;
     String accountSecretKey;
 
+    //CONSTRUCTORS
     public ThirdPartyTransactionDTO() {
     }
 
@@ -17,6 +18,7 @@ public class ThirdPartyTransactionDTO {
         this.accountSecretKey = accountSecretKey;
     }
 
+    //GETTERS AND SETTERS
     public Money getAmount() {
         return amount;
     }

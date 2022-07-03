@@ -2,13 +2,12 @@ package com.ironhack.midterm_project.model.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ironhack.midterm_project.model.Transaction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class ThirdParty{
@@ -20,6 +19,9 @@ public class ThirdParty{
     private String hashedKey; //Clave que se usa como mecanismo de autentificación
     @NotNull(message = "Name can not be null")
     private String name;
+
+    @OneToMany(mappedBy = "thirdParty")
+    private Set<Transaction> transactionsDone;
 
     public ThirdParty() {
     }
@@ -65,15 +67,6 @@ public class ThirdParty{
     public int hashCode() {
         return Objects.hash(hashedKey, name);
     }
-
-    @Override
-    public String toString() {
-        return "ThirdParty{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
     // can receive and send money to other accounts
     // should be added to the database by an admin
     // to send and receive money -> provide hashed key in the header of HTTP request

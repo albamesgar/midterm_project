@@ -1,10 +1,12 @@
 package com.ironhack.midterm_project.controller.impl;
 
 import com.ironhack.midterm_project.classes.Money;
-import com.ironhack.midterm_project.controller.dto.*;
+import com.ironhack.midterm_project.controller.dto.accounts.BalanceDTO;
+import com.ironhack.midterm_project.controller.dto.accounts.CheckingDTO;
+import com.ironhack.midterm_project.controller.dto.accounts.CreditCardDTO;
+import com.ironhack.midterm_project.controller.dto.accounts.SavingsDTO;
 import com.ironhack.midterm_project.controller.interfaces.AccountController;
 import com.ironhack.midterm_project.model.accounts.*;
-import com.ironhack.midterm_project.model.users.AccountHolder;
 import com.ironhack.midterm_project.repository.*;
 import com.ironhack.midterm_project.security.CustomUserDetails;
 import com.ironhack.midterm_project.service.interfaces.AccountService;
@@ -12,14 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class AccountControllerImpl implements AccountController {
@@ -30,42 +28,42 @@ public class AccountControllerImpl implements AccountController {
     @Autowired
     private AccountService accountService;
 
-    // Show all accounts
+    // Show all accounts (admin)
     @GetMapping("/accounts")
     @ResponseStatus(HttpStatus.OK)
     public List<Account> findAllAccounts(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return accountService.findAllAccounts();
     }
 
-    // Show all checking accounts
+    // Show all checking accounts (admin)
     @GetMapping("/accounts/checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<Checking> findAllChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return accountService.findAllChecking();
     }
 
-    // Show all student checking accounts
+    // Show all student checking accounts (admin)
     @GetMapping("/accounts/student-checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<StudentChecking> findAllStudentChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return studentCheckingRepository.findAll();
     }
 
-    // Show all credit card accounts
+    // Show all credit card accounts (admin)
     @GetMapping("/accounts/credit-cards")
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCard> findAllCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return accountService.findAllCreditCard();
     }
 
-    // Show all savings accounts
+    // Show all savings accounts (admin)
     @GetMapping("/accounts/savings")
     @ResponseStatus(HttpStatus.OK)
     public List<Savings> findAllSavings(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return accountService.findAllSavings();
     }
 
-    // Show all my accounts
+    // Show all my accounts (account-holder)
     @GetMapping("/my-accounts")
     @ResponseStatus(HttpStatus.OK)
     public List<Account> findAllMyAccounts(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -73,7 +71,7 @@ public class AccountControllerImpl implements AccountController {
         return accountService.findAllMyAccounts(userId);
     }
 
-    // Show all my checking accounts
+    // Show all my checking accounts (account-holder)
     @GetMapping("/my-accounts/checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<Checking> findAllMyChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -82,7 +80,7 @@ public class AccountControllerImpl implements AccountController {
         return accountService.findAllMyChecking(userId);
     }
 
-    // Show all student checking accounts
+    // Show all my student checking accounts (account-holder)
     @GetMapping("/my-accounts/student-checkings")
     @ResponseStatus(HttpStatus.OK)
     public List<StudentChecking> findAllMyStudentChecking(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -90,7 +88,7 @@ public class AccountControllerImpl implements AccountController {
         return studentCheckingRepository.findMyStudentCheckingAccounts(userId);
     }
 
-    // Show all my credit card accounts
+    // Show all my credit card accounts (account-holder)
     @GetMapping("/my-accounts/credit-cards")
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCard> findAllMyCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -99,7 +97,7 @@ public class AccountControllerImpl implements AccountController {
         return accountService.findAllMyCreditCard(userId);
     }
 
-    // Show all my savings accounts
+    // Show all my savings accounts (account-holder)
     @GetMapping("/my-accounts/savings")
     @ResponseStatus(HttpStatus.OK)
     public List<Savings> findAllMySavings(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -126,7 +124,7 @@ public class AccountControllerImpl implements AccountController {
         return accountService.findMyAccount(userId,id);
     }
 
-    // Create checking account if primary owner is older than 24 and student checking if he/she is younger
+    // Create checking account if primary owner is older than 24 and student checking if he/she is younger (admin)
     @PostMapping("/new/checking")
     @ResponseStatus(HttpStatus.CREATED)
     public Account createChecking(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -139,7 +137,7 @@ public class AccountControllerImpl implements AccountController {
         return accountService.createChecking(balance,secretKey,primaryOwnerId,secondaryOwnerId);
     }
 
-    // Create credit card account
+    // Create credit card account (admin)
     @PostMapping("/new/credit-card")
     @ResponseStatus(HttpStatus.CREATED)
     public CreditCard createCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -155,7 +153,7 @@ public class AccountControllerImpl implements AccountController {
                 optionalSecondaryOwnerId);
     }
 
-    // Create savings account
+    // Create savings account (admin)
     @PostMapping("/new/savings")
     @ResponseStatus(HttpStatus.CREATED)
     public Savings createSavingsAccount(@AuthenticationPrincipal CustomUserDetails userDetails,

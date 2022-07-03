@@ -1,4 +1,4 @@
-package com.ironhack.midterm_project.controller.dto;
+package com.ironhack.midterm_project.controller.dto.transactions;
 
 import com.ironhack.midterm_project.classes.Money;
 
@@ -7,6 +7,7 @@ public class TransferDTO {
     private String ownerName;
     private Long accountId;
 
+    //CONSTRUCTORS
     public TransferDTO() {
     }
 
@@ -16,6 +17,7 @@ public class TransferDTO {
         this.accountId = accountId;
     }
 
+    //GETTERS AND SETTERS
     public Money getAmount() {
         return amount;
     }

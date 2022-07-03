@@ -1,14 +1,16 @@
-package com.ironhack.midterm_project.controller.dto;
+package com.ironhack.midterm_project.controller.dto.users;
 
 import javax.validation.constraints.NotNull;
 
 public class AdminDTO {
+    @NotNull(message = "username can not be null")
     private String username;
     @NotNull(message = "password can not be null")
     private String password;
     @NotNull(message = "Role can not be null")
     private String role;
 
+    //CONSTRUCTORS
     public AdminDTO() {
     }
 
@@ -18,6 +20,7 @@ public class AdminDTO {
         this.role = role;
     }
 
+    //GETTERS AND SETTERS
     public String getUsername() {
         return username;
     }

@@ -183,7 +183,6 @@ Please note: In all DTOs, any reference to secondary owner is optional, and can 
 
 #### Accounts
 - CheckingDTO
-- 
 ```sh
 {"balance":{"amount":NUMBER, "currency":CURRENCY}, "primaryOwnerId":USERID, "secondaryOwnerId":USERID, "secretKey":STRING}
 ```
@@ -191,13 +190,15 @@ Please note: In all DTOs, any reference to secondary owner is optional, and can 
 - CreditCardDTO (creditLimitAmount, creditLimitCurrency and interestRate are optional)
 
 ```sh
-{"balance":{"amount":NUMBER, "currency":CURRENCY}, "primaryOwnerId":USERID, "secondaryOwnerId":USERID, "secretKey":STRING, "creditLimitAmount":NUMBER, "creditLimitCurrency":CURRENCY, "interestRate":DECIMAL}
+{"balance":{"amount":NUMBER, "currency":CURRENCY}, "primaryOwnerId":USERID, "secondaryOwnerId":USERID, "secretKey":STRING, 
+"creditLimitAmount":NUMBER, "creditLimitCurrency":CURRENCY, "interestRate":DECIMAL}
 ```
 
 - SavingsDTO (minimumBalanceAmount, minimumBalanceCurrency and interestRate are optional)
 
 ```sh
-{"balance":{"amount":NUMBER, "currency":CURRENCY}, "primaryOwnerId":USERID, "secondaryOwnerId":USERID, "secretKey":STRING, "minimumBalanceAmount":NUMBER, "minimumBalanceCurrency":CURRENCY, "interestRate":DECIMAL}
+{"balance":{"amount":NUMBER, "currency":CURRENCY}, "primaryOwnerId":USERID, "secondaryOwnerId":USERID, 
+"secretKey":STRING, "minimumBalanceAmount":NUMBER,"minimumBalanceCurrency":CURRENCY, "interestRate":DECIMAL}
 ```
 
 - BalanceDTO
@@ -216,7 +217,9 @@ Please note: In all DTOs, any reference to secondary owner is optional, and can 
 - AccountHolderDTO
 
 ```sh
-{"username":STRING, "password":STRING, "role":STRING, "dateOfBirth":"yyyy-mm-dd", "primaryAddress":{"street":STRING, "homeNumber":NUMBER, "city":STRING, "postalCode":NUMBER, "country":STRING}, "mailingAddress":{"street":STRING, "homeNumber":NUMBER, "city":STRING, "postalCode":NUMBER, "country":STRING}}
+{"username":STRING, "password":STRING, "role":STRING, "dateOfBirth":"yyyy-mm-dd", "primaryAddress":{"street":STRING, 
+"homeNumber":NUMBER, "city":STRING, "postalCode":NUMBER, "country":STRING}, "mailingAddress":{"street":STRING, 
+"homeNumber":NUMBER, "city":STRING, "postalCode":NUMBER, "country":STRING}}
 ```
 
 - ThirdPartyDTO

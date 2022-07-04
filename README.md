@@ -8,6 +8,7 @@ All these actions are secured with HTTP Basic Authentitication, so depending on 
 ![Database Diagram](https://user-images.githubusercontent.com/106671685/177126643-4046a6f2-977f-4f0b-8206-0e12617ccd3b.png)
 
 #### Class Diagram
+![Class Diagram](https://user-images.githubusercontent.com/106671685/177177139-77e6750b-6fe7-4900-9d71-c598f63d860f.png)
 
 #### Roles
 There are two roles: Administrators (*ADMIN*) and Account Holders (*ACCOUNT_HOLDER*). Administrators can create users and accounts. They can also modify the data of

@@ -12,7 +12,11 @@ public class Role {
     @JsonIgnore
     private Long id;
     private String name;
+    @OneToMany(mappedBy = "role")
+    @JsonIgnore
+    private Set<User> userSet;
 
+    //CONSTRUCTORS
     public Role() {
     }
 
@@ -20,10 +24,7 @@ public class Role {
         this.name = name;
     }
 
-    @OneToMany(mappedBy = "role")
-    @JsonIgnore
-    private Set<User> userSet;
-
+    //GETTERS AND SETTERS
     public Long getId() {
         return id;
     }

@@ -20,10 +20,8 @@ public class Transaction {
 
     @ManyToOne
     private Account sendingAccount;
-
     @ManyToOne
     private Account receivingAccount;
-
     @ManyToOne
     private ThirdParty thirdParty;
 

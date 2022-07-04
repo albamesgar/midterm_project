@@ -5,6 +5,8 @@ import com.ironhack.midterm_project.classes.Address;
 import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.controller.dto.transactions.ThirdPartyTransactionDTO;
 import com.ironhack.midterm_project.controller.dto.transactions.TransferDTO;
+import com.ironhack.midterm_project.enums.Status;
+import com.ironhack.midterm_project.model.Transaction;
 import com.ironhack.midterm_project.model.accounts.Checking;
 import com.ironhack.midterm_project.model.accounts.CreditCard;
 import com.ironhack.midterm_project.model.accounts.Savings;
@@ -14,6 +16,7 @@ import com.ironhack.midterm_project.model.users.Admin;
 import com.ironhack.midterm_project.model.users.Role;
 import com.ironhack.midterm_project.model.users.ThirdParty;
 import com.ironhack.midterm_project.repository.*;
+import com.ironhack.midterm_project.service.impl.TransactionServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +58,8 @@ class TransactionControllerImplTest {
     private ThirdPartyRepository thirdPartyRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TransactionServiceImpl transactionService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -108,6 +113,38 @@ class TransactionControllerImplTest {
     }
 
     @Test
+    void fraudFound_NoFraud() {
+        Transaction transaction1 =
+                new Transaction(LocalDateTime.of(2022,3,3,11,12,1),
+                        new Money(BigDecimal.valueOf(10)),checking,savings);
+        Transaction transaction2 =
+                new Transaction(LocalDateTime.of(2022,3,3,11,12,5),
+                        new Money(BigDecimal.valueOf(20)),checking,savings);
+        Transaction transaction3 =
+                new Transaction(LocalDateTime.of(2022,3,5,11,12,1),
+                        new Money(BigDecimal.valueOf(20)),checking,savings);
+        checking.getTransactionsDone().add(transaction1);
+        checking.getTransactionsDone().add(transaction2);
+        assertFalse(transactionService.fraudFound(checking,transaction3));
+    }
+
+    @Test
+    void fraudFound_FraudDueToMultipleTransfers1sec() {
+        Transaction transaction1 =
+                new Transaction(LocalDateTime.of(2020,3,3,11,12,1),
+                        new Money(BigDecimal.valueOf(10)),checking,savings);
+        Transaction transaction2 =
+                new Transaction(LocalDateTime.of(2020,3,3,11,12,1),
+                        new Money(BigDecimal.valueOf(20)),checking,savings);
+        Transaction transaction3 =
+                new Transaction(LocalDateTime.of(2020,3,3,11,12,1),
+                        new Money(BigDecimal.valueOf(30)),checking,savings);
+        checking.getTransactionsDone().add(transaction1);
+        checking.getTransactionsDone().add(transaction2);
+        assertTrue(transactionService.fraudFound(checking,transaction3));
+    }
+
+    @Test
     void transferFoundings() throws Exception {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Basic TGlhOjEyMzQ="); //username: Lia, password: 1234
@@ -153,7 +190,7 @@ class TransactionControllerImplTest {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Basic TGlhOjEyMzQ="); //username: Lia, password: 1234
 
-        TransferDTO transferDTO = new TransferDTO(new Money(BigDecimal.valueOf(10)),"Fran",7L);
+        TransferDTO transferDTO = new TransferDTO(new Money(BigDecimal.valueOf(10)),"Fran",0L);
         String body = objectMapper.writeValueAsString(transferDTO);
 
         // Hago la llamada HTTP
@@ -183,7 +220,7 @@ class TransactionControllerImplTest {
     }
 
     @Test
-    void transferFoundings_NoSufficientFoundingd() throws Exception {
+    void transferFoundings_NoSufficientFoundings() throws Exception {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Basic TGlhOjEyMzQ="); //username: Lia, password: 1234
 
@@ -196,6 +233,25 @@ class TransactionControllerImplTest {
                                 .content(body)
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isConflict())
+                .andReturn();
+    }
+
+    @Test
+    void transferFoundings_FromFrozenAccount() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization","Basic TGlhOjEyMzQ="); //username: Lia, password: 1234
+
+        TransferDTO transferDTO = new TransferDTO(new Money(BigDecimal.valueOf(600)),"Fran",checking.getId());
+        String body = objectMapper.writeValueAsString(transferDTO);
+        studentChecking.setStatus(Status.FROZEN);
+        accountRepository.save(studentChecking);
+
+        // Hago la llamada HTTP
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/my-accounts/"+studentChecking.getId()+"/transfer").headers(httpHeaders)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isForbidden())
                 .andReturn();
     }
 
@@ -239,7 +295,7 @@ class TransactionControllerImplTest {
     @Test
     void thirdPartyRefund_ToWrongAccountId() throws Exception {
         ThirdPartyTransactionDTO thirdPartyTransactionDTO =
-                new ThirdPartyTransactionDTO(new Money(BigDecimal.valueOf(10)),7L,
+                new ThirdPartyTransactionDTO(new Money(BigDecimal.valueOf(10)),0L,
                         "1234");
         String body = objectMapper.writeValueAsString(thirdPartyTransactionDTO);
 
@@ -308,7 +364,7 @@ class TransactionControllerImplTest {
     @Test
     void thirdPartyDischarge_ToWrongAccountId() throws Exception {
         ThirdPartyTransactionDTO thirdPartyTransactionDTO =
-                new ThirdPartyTransactionDTO(new Money(BigDecimal.valueOf(10)),7L,
+                new ThirdPartyTransactionDTO(new Money(BigDecimal.valueOf(10)),0L,
                         "1234");
         String body = objectMapper.writeValueAsString(thirdPartyTransactionDTO);
 

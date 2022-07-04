@@ -6,6 +6,7 @@ import com.ironhack.midterm_project.model.Transaction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,13 +17,14 @@ public class ThirdParty{
     private Long id;
     @NotNull(message = "Hashed key can not be null")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String hashedKey; //Clave que se usa como mecanismo de autentificación
+    private String hashedKey;
     @NotNull(message = "Name can not be null")
     private String name;
 
     @OneToMany(mappedBy = "thirdParty")
-    private Set<Transaction> transactionsDone;
+    private Set<Transaction> transactionsDone = new HashSet<>();
 
+    //CONSTRUCTORS
     public ThirdParty() {
     }
 
@@ -31,6 +33,7 @@ public class ThirdParty{
         this.name = name;
     }
 
+    //GETTERS AND SETTERS
     public Long getId() {
         return id;
     }
@@ -55,6 +58,15 @@ public class ThirdParty{
         this.name = name;
     }
 
+    public Set<Transaction> getTransactionsDone() {
+        return transactionsDone;
+    }
+
+    public void setTransactionsDone(Set<Transaction> transactionsDone) {
+        this.transactionsDone = transactionsDone;
+    }
+
+    //Is equal
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,8 +79,4 @@ public class ThirdParty{
     public int hashCode() {
         return Objects.hash(hashedKey, name);
     }
-    // can receive and send money to other accounts
-    // should be added to the database by an admin
-    // to send and receive money -> provide hashed key in the header of HTTP request
-        // provide amount, account id and account secret key
 }

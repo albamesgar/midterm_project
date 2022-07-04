@@ -33,12 +33,12 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionRepository transactionRepository;
 
     public Boolean fraudFound(Account account, Transaction transaction) {
-        LocalDateTime now = LocalDateTime.now();
-        if (account.getTransactionsDone().size() <= 2) {
+        LocalDateTime now = transaction.getTransactionDate();
+        if (account.getTransactionsDone().size() <= 1) {
             return false;
         }
         Transaction secondLastTransaction = (Transaction) account.getTransactionsDone().toArray()
-                [account.getTransactionsDone().size()-2];
+                [account.getTransactionsDone().size()-1];
         LocalDateTime secondLastTransactionTime = secondLastTransaction.getTransactionDate();
         if (now.getDayOfYear() == secondLastTransactionTime.getDayOfYear() &&
                 now.getHour() == secondLastTransactionTime.getHour() &&
@@ -59,23 +59,26 @@ public class TransactionServiceImpl implements TransactionService {
 
     public BigDecimal findHighestDailyTotal(Account account) {
         if (account.getTransactionsDone().size() < 1) {
-            return BigDecimal.ZERO;
+            return BigDecimal.valueOf(0);
         }
-        BigDecimal maxTransaction = BigDecimal.ZERO;
-        BigDecimal dailyTotal = BigDecimal.ZERO;
+        LocalDateTime timeNow = LocalDateTime.now();
+        LocalDateTime timeYesterday = timeNow.minusDays(1);
+        BigDecimal maxTransaction = BigDecimal.valueOf(0);
+        BigDecimal dailyTotal = BigDecimal.valueOf(0);
         Transaction firstTransaction = (Transaction) account.getTransactionsDone().toArray()[0];
         LocalDate transactionDate = firstTransaction.getTransactionDate().toLocalDate();
         for (int i = 0; i < account.getTransactionsDone().size(); i++) {
             Transaction transaction = (Transaction) account.getTransactionsDone().toArray()[i];
-            if (transaction.getTransactionDate().toLocalDate().equals(transactionDate)) {
-                dailyTotal.add(transaction.getAmount().getAmount());
-            }
-            else {
-                if (dailyTotal.compareTo(maxTransaction) > 0) {
-                    maxTransaction = dailyTotal;
+            if (transaction.getTransactionDate().isBefore(timeYesterday)) {
+                if (transaction.getTransactionDate().toLocalDate().equals(transactionDate)) {
+                    dailyTotal.add(transaction.getAmount().getAmount());
+                    if (dailyTotal.compareTo(maxTransaction) >= 0) {
+                        maxTransaction = dailyTotal;
+                    }
+                } else {
+                    dailyTotal = BigDecimal.valueOf(0);
+                    transactionDate = transaction.getTransactionDate().toLocalDate();
                 }
-                dailyTotal = BigDecimal.ZERO;
-                transactionDate = transaction.getTransactionDate().toLocalDate();
             }
         }
         return maxTransaction;
@@ -84,7 +87,7 @@ public class TransactionServiceImpl implements TransactionService {
     public BigDecimal transactionTotalInLastDay(Account account) {
         LocalDateTime timeNow = LocalDateTime.now();
         LocalDateTime timeYesterday = timeNow.minusDays(1);
-        BigDecimal transactionTotal = BigDecimal.ZERO;
+        BigDecimal transactionTotal = BigDecimal.valueOf(0);
         for (int i = 0; i < account.getTransactionsDone().size(); i++) {
             Transaction transaction = (Transaction) account.getTransactionsDone().toArray()[i];
             if (transaction.getTransactionDate().isBefore(timeNow) &&
@@ -115,8 +118,8 @@ public class TransactionServiceImpl implements TransactionService {
                     receivingAccount.getSecondaryOwner().getUsername());
         }
         if (!ownersList.contains(receivingAccountOwnerName)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The receptor indicated is not an owner of the " +
-                    "receiving account");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The receptor indicated is not an owner of the" +
+                    " receiving account");
         }
         //Check if the receiving account is frozen
         if (receivingAccount.getStatus().equals(Status.FROZEN)){
@@ -127,7 +130,7 @@ public class TransactionServiceImpl implements TransactionService {
         //Check if my account has sufficient funds
         Money myBalance = new Money(sendingAccount.getBalance().getAmount(),sendingAccount.getBalance().getCurrency());
         myBalance.decreaseAmount(amount);
-        if (myBalance.getAmount().compareTo(BigDecimal.ZERO) < 0){
+        if (myBalance.getAmount().compareTo(BigDecimal.valueOf(0)) < 0){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You have not sufficient founds in the account " +
                     "to transfer the indicated amount");
         }

@@ -18,4 +18,8 @@ public interface AccountRepository extends JpaRepository<Account,Long> {
     @Query("SELECT a FROM Account a JOIN AccountHolder ah ON a.primaryOwner = ah.id OR a.secondaryOwner = ah.id " +
             "WHERE ah.id = :userId AND a.id = :accountId")
     Optional<Account> findMyAccountById(@Param("userId") Long userId, @Param("accountId") Long accountId);
+
+    @Query("SELECT a FROM Account a JOIN AccountHolder ah ON a.primaryOwner = ah.id OR a.secondaryOwner = ah.id " +
+            "WHERE ah.id = :userId")
+    List<Account> findAccountsByUserId(@Param("userId") Long userId);
 }

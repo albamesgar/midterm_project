@@ -2,6 +2,7 @@ package com.ironhack.midterm_project.service.impl;
 
 import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.classes.TimeDifference;
+import com.ironhack.midterm_project.model.Transaction;
 import com.ironhack.midterm_project.model.accounts.*;
 import com.ironhack.midterm_project.model.users.AccountHolder;
 import com.ironhack.midterm_project.repository.*;
@@ -31,6 +32,8 @@ public class AccountServiceImpl implements AccountService {
     private SavingsRepository savingsRepository;
     @Autowired
     private AccountHolderRepository accountHolderRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     public void applyMonthlyMaintenanceFee(Checking checking){
         LocalDate lastTimeMaintenanceFeeApplied = checking.getLastTimeMaintenanceFeeApplied();
@@ -280,5 +283,12 @@ public class AccountServiceImpl implements AccountService {
         Account account = findAccount(id);
         account.setBalance(newBalance);
         accountRepository.save(account);
+    }
+
+    public void deleteAccount(Long id){
+        Account account = findAccount(id);
+        List<Transaction> transactionList = transactionRepository.findTransactionsByAccountId(id);
+        transactionRepository.deleteAll(transactionList);
+        accountRepository.delete(account);
     }
 }

@@ -56,7 +56,8 @@ public class AccountHolder extends User {
         this.primaryAddress = primaryAddress;
     }
 
-    public AccountHolder(String username, String password, Role role, Date dateOfBirth, Address primaryAddress, Address mailingAddress) {
+    public AccountHolder(String username, String password, Role role, Date dateOfBirth, Address primaryAddress,
+                         Address mailingAddress) {
         super(username, password, role);
         this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
@@ -76,6 +77,7 @@ public class AccountHolder extends User {
         return mailingAddress;
     }
 
+    //Is equal
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,9 +91,4 @@ public class AccountHolder extends User {
     public int hashCode() {
         return Objects.hash(super.hashCode(), dateOfBirth, primaryAddress);
     }
-
-    // access to their own account balance
-    // transfer money from any of their accounts to any other account
-        // only if there are sufficient founds
-        // provide Primary or Secondary owner name and id of the receiver account
 }

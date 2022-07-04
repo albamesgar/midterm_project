@@ -31,6 +31,4 @@ public class StudentChecking extends Account{
         super(balance, primaryOwner, secondaryOwner, secretKey, creationDate);
         this.accountType = AccountType.STUDENT_CHECKING;
     }
-
-    // GETTERS AND SETTERS
 }

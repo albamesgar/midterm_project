@@ -13,10 +13,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfiguration {
 
-    @Bean //Convierte los métodos en beans inyectables
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.httpBasic(); // Vamos a utilitzar basic auth
-        http.csrf().disable(); // Desactivamos la protección CSRF porque nosotros no vamos a manejar el HTML
+        http.httpBasic();
+        http.csrf().disable();
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/accounts/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
@@ -32,7 +32,8 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

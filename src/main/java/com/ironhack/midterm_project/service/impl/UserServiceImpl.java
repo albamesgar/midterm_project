@@ -1,6 +1,8 @@
 package com.ironhack.midterm_project.service.impl;
 
 import com.ironhack.midterm_project.classes.Address;
+import com.ironhack.midterm_project.model.Transaction;
+import com.ironhack.midterm_project.model.accounts.Account;
 import com.ironhack.midterm_project.model.users.*;
 import com.ironhack.midterm_project.repository.*;
 import com.ironhack.midterm_project.service.interfaces.UserService;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,11 +26,15 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AccountHolderRepository accountHolderRepository;
     @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
     private ThirdPartyRepository thirdPartyRepository;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     public User findUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
@@ -124,11 +131,17 @@ public class UserServiceImpl implements UserService {
 
     public void deleteUser(Long id) {
         User user = findUserById(id);
+        List<Account> accountList = accountRepository.findAccountsByUserId(id);
+        List<Transaction> transactionList = transactionRepository.findTransactionsByUserId(id);
+        transactionRepository.deleteAll(transactionList);
+        accountRepository.deleteAll(accountList);
         userRepository.delete(user);
     }
 
     public void deleteThirdParty(Long id) {
         ThirdParty thirdParty = findThirdPartyById(id);
+        List<Transaction> transactionList = transactionRepository.findTransactionsByThirdPartyId(id);
+        transactionRepository.deleteAll(transactionList);
         thirdPartyRepository.delete(thirdParty);
     }
 }

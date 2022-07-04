@@ -27,8 +27,6 @@ public class CreditCard extends Account{
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate lastTimeInterestApplied;
 
-    // the interest*balance is added monthly to the balance (interest = interestRate/12)
-
     // CONSTRUCTORS
     public CreditCard() {
         this.creditLimit = new Money(new BigDecimal(100));

@@ -18,7 +18,6 @@ import java.time.LocalDate;
 @PrimaryKeyJoinColumn(name = "id")
 public class Savings extends Account{
     @Embedded
-//    @DecimalMin(value = "100", message = "The minimum balance can not be lower than 100")
     @AttributeOverrides({
             @AttributeOverride(name = "amount", column = @Column(name = "minimum_balance_amount")),
             @AttributeOverride(name = "currency", column = @Column(name = "minimum_balance_currency"))
@@ -29,8 +28,6 @@ public class Savings extends Account{
     private BigDecimal interestRate; //Default 0.0025, max 0.5
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate lastTimeInterestApplied;
-
-    // after one year the balance*interestRate is added to the balance
 
     // CONSTRUCTORS
     public Savings() {
@@ -81,7 +78,7 @@ public class Savings extends Account{
         super.setBalance(balance);
         Money actualBalance = new Money(getBalance().getAmount(),getBalance().getCurrency());
         actualBalance.decreaseAmount(minimumBalance);
-        if (actualBalance.getAmount().compareTo(BigDecimal.ZERO) < 0){
+        if (actualBalance.getAmount().compareTo(BigDecimal.valueOf(0)) < 0){
             balance.decreaseAmount(super.getPenaltyFee());
         }
     }

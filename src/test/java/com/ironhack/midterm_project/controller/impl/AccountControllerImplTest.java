@@ -7,6 +7,8 @@ import com.ironhack.midterm_project.controller.dto.accounts.BalanceDTO;
 import com.ironhack.midterm_project.controller.dto.accounts.CheckingDTO;
 import com.ironhack.midterm_project.controller.dto.accounts.CreditCardDTO;
 import com.ironhack.midterm_project.controller.dto.accounts.SavingsDTO;
+import com.ironhack.midterm_project.enums.TransactionType;
+import com.ironhack.midterm_project.model.Transaction;
 import com.ironhack.midterm_project.model.accounts.Checking;
 import com.ironhack.midterm_project.model.accounts.CreditCard;
 import com.ironhack.midterm_project.model.accounts.Savings;
@@ -32,6 +34,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
@@ -89,6 +92,10 @@ class AccountControllerImplTest {
         savings = new Savings(new Money(BigDecimal.valueOf(1500)),accountHolder1,accountHolder2,
                 UUID.nameUUIDFromBytes(("1234").getBytes()).toString(), new Money(BigDecimal.valueOf(150)),
                 BigDecimal.valueOf(0.0025),LocalDate.of(2021,6,1));
+        Transaction transaction =
+                new Transaction(LocalDateTime.of(2020,3,3,11,12,1),
+                        new Money(BigDecimal.valueOf(30)),savings,checking);
+        savings.getTransactionsReceived().add(transaction);
 
         roleRepository.saveAll(List.of(adminRole,accountHolderRole));
         userRepository.saveAll(List.of(admin,accountHolder1,accountHolder2));

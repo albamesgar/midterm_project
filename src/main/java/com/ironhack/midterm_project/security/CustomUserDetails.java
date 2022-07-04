@@ -21,9 +21,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-//        for(Role role : user.getRole()){
-            authorities.add(new SimpleGrantedAuthority("ROLE_"+user.getRole().getName()));
-//        }
+        authorities.add(new SimpleGrantedAuthority("ROLE_"+user.getRole().getName()));
 
         return authorities;
     }
@@ -55,7 +53,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true; // todos nuestro usuarios están habilitados
+        return true;
     }
 
     public User getUser() {

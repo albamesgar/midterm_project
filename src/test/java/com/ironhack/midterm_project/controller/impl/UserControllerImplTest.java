@@ -2,9 +2,13 @@ package com.ironhack.midterm_project.controller.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.midterm_project.classes.Address;
+import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.controller.dto.users.AccountHolderDTO;
 import com.ironhack.midterm_project.controller.dto.users.AdminDTO;
 import com.ironhack.midterm_project.controller.dto.users.ThirdPartyDTO;
+import com.ironhack.midterm_project.enums.TransactionType;
+import com.ironhack.midterm_project.model.Transaction;
+import com.ironhack.midterm_project.model.accounts.Savings;
 import com.ironhack.midterm_project.model.users.AccountHolder;
 import com.ironhack.midterm_project.model.users.Admin;
 import com.ironhack.midterm_project.model.users.Role;
@@ -22,7 +26,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,9 +50,9 @@ class UserControllerImplTest {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-    private TransactionRepository transactionRepository;
-    @Autowired
     private ThirdPartyRepository thirdPartyRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -54,6 +61,7 @@ class UserControllerImplTest {
     AccountHolder accountHolder1, accountHolder2;
     Address address1, address2;
     ThirdParty thirdParty;
+    Savings savings;
 
     @BeforeEach
     void setUp() {
@@ -67,17 +75,26 @@ class UserControllerImplTest {
                 25,"Cuba");
         accountHolder2 = new AccountHolder("Fran", passwordEncoder.encode("1234"), accountHolderRole,
                 Date.valueOf("1985-06-12"), address2,address2);
+        savings = new Savings(new Money(BigDecimal.valueOf(1500)),accountHolder1,accountHolder2,
+                UUID.nameUUIDFromBytes(("1234").getBytes()).toString(), new Money(BigDecimal.valueOf(150)),
+                BigDecimal.valueOf(0.0025), LocalDate.of(2021,6,1));
         thirdParty = new ThirdParty(UUID.nameUUIDFromBytes(("1234").getBytes()).toString(),"Zara");
+        Transaction transaction =
+                new Transaction(LocalDateTime.of(2020,3,3,11,12,1),
+                        new Money(BigDecimal.valueOf(30)),savings,thirdParty, TransactionType.REFUND);
+        savings.getTransactionsReceived().add(transaction);
+        thirdParty.getTransactionsDone().add(transaction);
 
         roleRepository.saveAll(List.of(adminRole,accountHolderRole));
         userRepository.saveAll(List.of(admin,accountHolder1,accountHolder2));
+        accountRepository.save(savings);
         thirdPartyRepository.save(thirdParty);
     }
 
     @AfterEach
     void tearDown() {
         thirdPartyRepository.deleteAll();
-        transactionRepository.deleteAll();
+        accountRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
     }

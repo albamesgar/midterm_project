@@ -4,6 +4,11 @@ This is an API simulating a banking service. With this API users can be added, m
 All these actions are secured with HTTP Basic Authentitication, so depending on your role you will be able to do some actions or some others.
 
 ### API structure
+#### Database Diagram
+![Database Diagram](https://user-images.githubusercontent.com/106671685/177126643-4046a6f2-977f-4f0b-8206-0e12617ccd3b.png)
+
+#### Class Diagram
+
 #### Roles
 There are two roles: Administrators (*ADMIN*) and Account Holders (*ACCOUNT_HOLDER*). Administrators can create users and accounts. They can also modify the data of
 the users and the accounts, including modifying the balance of any account. Finally, they can also delete users and accounts from the database, having in mind that at least

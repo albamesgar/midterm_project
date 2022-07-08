@@ -1,6 +1,7 @@
 package com.ironhack.midterm_project.model.accounts;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.midterm_project.classes.Money;
 import com.ironhack.midterm_project.enums.AccountType;
@@ -58,8 +59,10 @@ public abstract class Account {
     protected AccountType accountType;
 
     @OneToMany(mappedBy = "sendingAccount")
+    @JsonIgnore
     private Set<Transaction> transactionsDone = new HashSet<>();
     @OneToMany(mappedBy = "receivingAccount")
+    @JsonIgnore
     private Set<Transaction> transactionsReceived = new HashSet<>();
 
     // CONSTRUCTORS

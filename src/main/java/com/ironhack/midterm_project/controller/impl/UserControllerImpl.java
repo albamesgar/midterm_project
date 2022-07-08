@@ -60,6 +60,7 @@ public class UserControllerImpl implements UserController {
 
     //Show all third-parties (admin)
     @GetMapping("/users/third-parties")
+    @ResponseStatus(HttpStatus.OK)
     public List<ThirdParty> findThirdParties(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return thirdPartyRepository.findAll();
     }

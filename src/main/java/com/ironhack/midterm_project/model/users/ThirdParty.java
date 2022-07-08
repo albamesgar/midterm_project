@@ -22,6 +22,7 @@ public class ThirdParty{
     private String name;
 
     @OneToMany(mappedBy = "thirdParty")
+    @JsonIgnore
     private Set<Transaction> transactionsDone = new HashSet<>();
 
     //CONSTRUCTORS

@@ -39,7 +39,7 @@ public class AccountHolder extends User {
     private Address mailingAddress;
 
     @OneToMany(mappedBy = "primaryOwner")
-    @JsonIgnore
+    @JsonIgnoreProperties()
     private Set<Account> primaryAccountSet;
 
     @OneToMany(mappedBy = "secondaryOwner")
